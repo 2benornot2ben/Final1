@@ -1,14 +1,14 @@
 package backend;
 
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class Teacher extends User {
 	public Teacher(String user) {
-		username = user;
-		courseList = new HashSet<Course>();
+		super(user);
 	}
 	
-	public HashSet<Course> getCourseList(){
-		//this should return copy of course list
+	// This is meant for IMPORTING
+	protected Teacher(String user, HashMap<String, Course> courseList) {
+		super(user, courseList);
 	}
 }

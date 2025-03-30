@@ -3,10 +3,15 @@ package backend;
 import java.util.HashMap;
 
 public class AccountStorage {
-	private HashMap<Integer, User> accountList;
+	private HashMap<String, User> accountList; // The string is username.
 	
 	public AccountStorage() {
-		accountList = new HashMap<Integer, User>();
+		accountList = new HashMap<String, User>();
+	}
+	
+	// This is meant for IMPORTING
+	protected AccountStorage(HashMap<String, User> accountList) {
+		this.accountList = new HashMap<String, User>(accountList);
 	}
 	
 	public void createAccount() {

@@ -2,9 +2,10 @@ package backend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Model {
-	private ArrayList<Course> fullCourseList; // ArrayList may make sense here; may not. Decide later.
+	private HashMap<String, Course> fullCourseList; // ArrayList was sadly replaced by HashMap; str is the name.
 	private HashMap<String, Student> studentList; // ONLY students, string is username.
 	// I feel like we'd need more...
 	private boolean isTeacher;
@@ -12,9 +13,10 @@ public class Model {
 	
 	// definetely needs a parameter but i dont know yet.
 	public Model() {
-		fullCourseList = new ArrayList<Course>();
+		fullCourseList = new HashMap<String, Course>();
 		studentList = new HashMap<String, Student>();
 	}
+	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
 	
 	/*
@@ -198,5 +200,7 @@ public class Model {
 		// assignments with the lowest grade and to assign weights to the different categories.
 		
 		// course should come as a parameter (ig)
+		
+		// Is this necessary? - Ben
 	}
 }

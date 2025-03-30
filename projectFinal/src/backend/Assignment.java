@@ -3,7 +3,7 @@ package backend;
 import java.util.HashMap;
 
 public class Assignment {
-	private HashMap<Integer, Integer> idToGrade; // First int is studentId, second is grade
+	private HashMap<String, Integer> idToGrade; // First string is username, second is grade
 	private int maxGrade; // Note that going over is like a bonus grade.
 	private boolean graded; // If ALL is graded
 	private String assignmentName;
@@ -13,7 +13,16 @@ public class Assignment {
 	public Assignment(String assignmentName, int maxGrade) {
 		this.assignmentName = assignmentName;
 		this.maxGrade = maxGrade;
-		idToGrade = new HashMap<Integer, Integer>();
+		idToGrade = new HashMap<String, Integer>();
+	}
+	
+	// This is meant for IMPORTING
+	protected Assignment(String assignmentName, int maxGrade,
+			HashMap<String,Integer> idToGrade, boolean graded) {
+		this.assignmentName = assignmentName;
+		this.maxGrade = maxGrade;
+		this.idToGrade = new HashMap<String, Integer>(idToGrade);
+		this.graded = graded;
 	}
 	
 	public String getAssignmentName() {
