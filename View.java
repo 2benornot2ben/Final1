@@ -24,8 +24,8 @@ public class View {
 			}else if(choice.equals("2")) {
 				showTeacherMenu(scanner);
 			} else if(choice.equals("0")) {
-                System.out.println("Thank you for using Gradebook. Goodbye!");
-                state = false;
+                		System.out.println("Thank you for using Gradebook. Goodbye!");
+                		state = false;
 			}else {
 				System.out.println("Invalid choice. Please try again.");
 			}
@@ -39,7 +39,7 @@ public class View {
 		boolean studentState = true;
 		
 		while(studentState) {
-            System.out.println("\nStudent Menu:\n");
+            		System.out.println("\nStudent Menu:\n");
 			System.out.println("1. To view courses");
 			System.out.println("2. To view assignments");
 			System.out.println("3. To get class average");
@@ -111,7 +111,7 @@ public class View {
 	}
 
 	public static void showTeacherMenu(Scanner scanner) {
-        System.out.println("\nTeacher Menu:\n");
+        	System.out.println("\nTeacher Menu:\n");
 	}
 }
 
