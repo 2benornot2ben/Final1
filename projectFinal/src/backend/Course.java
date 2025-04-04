@@ -2,30 +2,32 @@ package backend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Course {
-	private HashMap<Integer, Assignment> assignmentList; // The integer is the hash of the Assignment.
+	private HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
 	private String courseName;
-	// No duplicate assignments! ... Why would you have a duplicate, anyways?
-	private HashMap<String, Student> studentList; // The string is the username
+	
+	private Teacher teacher; // Comment: Should each course have a teacher?
+	private HashMap<String, Student> studentMap; // The string is the username
 	private Boolean completed;
 	private HashMap<String, ArrayList<Student>> groupList; // String is "group name"
 	
 	public Course(String courseName) {
 		this.courseName = courseName;
-		assignmentList = new HashMap<Integer, Assignment>();
-		studentList = new HashMap<String, Student>();
+		assignmentMap = new HashMap<String, Assignment>();
+		studentMap = new HashMap<String, Student>();
 		groupList = new HashMap<String, ArrayList<Student>>(); // This could be an arraylist if you think
 		// groups should be ordered by "number". We are contractually obligated to consider this.
 	}
 	
 	// This is meant to be used for IMPORTING.
-	protected Course(String courseName, HashMap<Integer, Assignment> assignmentList,
-			HashMap<String, Student> studentList, HashMap<String, ArrayList<Student>> groupList) {
+	protected Course(String courseName, HashMap<String, Assignment> assignmentMap,
+			HashMap<String, Student> studentMap, HashMap<String, ArrayList<Student>> groupMap) {
 		this.courseName = courseName;
-		this.assignmentList = new HashMap<Integer, Assignment>(assignmentList);
-		this.studentList = new HashMap<String, Student>(studentList);
-		this.groupList = new HashMap<String, ArrayList<Student>>(groupList);
+		this.assignmentMap = assignmentMap; // escaping reference; will handle it later when we actually use it.
+		this.studentMap = studentMap; // escaping reference; will handle it later when we actually use it.
+		this.groupList = groupMap; // escaping reference; will handle it later when we actually use it.
 	}
 	
 	public String getCourseName() {
@@ -51,6 +53,45 @@ public class Course {
 		/* Hashcode override. Uses ONLY the courseName, so no duplicate courses. */
 	    return courseName.hashCode();
 	}
+
+
+	public boolean isCompleted() {
+		return completed;
+	}
 	
-	// there might be other getters it depends on the functionality of Model methods
+	public HashSet<String> getGradedAssignments() {
+		// go over the assignemtns and check if the assignment is graded
+		// if so add it to the hashset
+		// return the hashset
+		HashSet<String> gradedAssignments = new HashSet<String>();
+		for (String key : assignmentMap.keySet()) {
+			if (assignmentMap.get(key).isGraded()) {
+				gradedAssignments.add(key);
+			}
+		}
+		return gradedAssignments;
+	}
+	
+	public HashSet<String> getUngradedAssignments() {
+		HashSet<String> ungradedAssignments = new HashSet<String>();
+		for (String key : assignmentMap.keySet()) {
+			if (!assignmentMap.get(key).isGraded()) {
+				ungradedAssignments.add(key);
+			}
+		}
+		return ungradedAssignments;
+	}
+
+	public double getCourseAverage() {
+		double totalAvg = 0;
+		for (String key : studentMap.keySet()) {
+			totalAvg += studentMap.get(key).getStudentAverage(courseName);
+		}
+		return totalAvg / studentMap.size();
+	}
+
+	// public double getStudentAverage(String studentUsername) {
+	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
+	// }
+
 }

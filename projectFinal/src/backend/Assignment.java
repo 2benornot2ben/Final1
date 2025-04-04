@@ -29,5 +29,9 @@ public class Assignment {
 		return assignmentName;
 	}
 	
+	public boolean isGraded() {
+		return graded;
+	}
+	
 	// there might be other getters it depends on the functionality of Model methods
 }
