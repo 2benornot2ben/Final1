@@ -1,24 +1,66 @@
 package backend;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class Model {
-	private HashMap<String, Course> fullCourseList; // ArrayList was sadly replaced by HashMap; str is the name.
-	private HashMap<String, Student> studentList; // ONLY students, string is username.
-	// I feel like we'd need more...
-	private boolean isTeacher;
+
+	// this represesnts all the courses.
+	private HashMap<String, Course> fullCourseMap;	// str is the course name.
+
+
+	private HashMap<String, Student> studentMap; // str is the username
+
+	private HashMap<String, Teacher> teacherMap; // str is the username
 	
 	
 	// definetely needs a parameter but i dont know yet.
 	public Model() {
-		fullCourseList = new HashMap<String, Course>();
-		studentList = new HashMap<String, Student>();
+		fullCourseMap = new HashMap<String, Course>();
+		studentMap = new HashMap<String, Student>();
 	}
 	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
+	// STUDENT METHODS 
+	public HashSet<String> getGradedAssignments(String courseName) {
+		
+		Course course = fullCourseMap.get(courseName);
+		return course.getGradedAssignments(); // I believe no escaping reference here but could someone please confirm?
+	}
 	
+	public HashSet<String> getUngradedAssignments(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		return course.getUngradedAssignments(); // I believe no escaping reference here but could someone please confirm?
+	}
+	
+	public double getCourseAverage(String courseName) {
+		return fullCourseMap.get(courseName).getCourseAverage();
+	}
+	
+	public double calculateGPA(String studentUsername) {
+		Student student = studentMap.get(studentUsername);
+		return student.calculateGPA();
+	}
+
+	public HashSet<String> getCurCoursesStudent(String studentUsername) {
+		return studentMap.get(studentUsername).getCurCourses();
+	}
+
+	public HashSet<String> getCompletedCoursesStudent(String studentUsername) {
+		return studentMap.get(studentUsername).getCompletedCourses();
+	}
+
+	// TEACHER METHODS
+	public HashSet<String> getCurCoursesTeacher(String teacherUsername) {
+		return teacherMap.get(teacherUsername).getCurCourses();
+	}
+
+	public HashSet<String> getCompletedCoursesTeacher(String teacherUsername) {
+		return teacherMap.get(teacherUsername).getCompletedCourses();
+	}
+
+
+
 	/*
 	 *  All the methods are void right now, but if they return something change it to something`s type.
 	 *  This might not be final layout
@@ -26,38 +68,7 @@ public class Model {
 	 *  
 	 *  I did not include parameters because i not sure what will they be, but i included my guesses. 
 	 */
-	
-	
-	
-	
-	
-	public void getGradedAssignments() {
-		// for students
-		// returns graded assignments
-		
-		// ! watch for escaping reference
-	}
-	
-	public void getUngradedAssignments() {
-		// for students & teachers
-		// returns ungraded assignments
-		
-		// ! watch for escaping reference
-	}
-	
-	public void getCourseAverage() {
-		// for students
-		// returns average of the course based on the graded assignments
-		
-		// ! watch for escaping reference
-	}
-	
-	public void calculateGPA() {
-		// for students
-		// calculates the GPA based on the final grades of completed tasks.
-		// return double
-	}
-	
+
 	public void addAssignment() {
 		// for teachers
 		// adds an assignment to a course
@@ -121,16 +132,9 @@ public class Model {
 		
 	}
 	
-	public void calculateStudentAverage() {
-		// for teachers
-		// calculates student average on a course from graded assignments
-		// returns double.
-		
-		// this method might be the same as getCourseAverage() if so then remove one of them.
-		
-		// student, course should come as a parameter (ig)
+	public double calculateStudentCurAverage(String studentUsername) {
+		return studentMap.get(studentUsername).calculateCurAverage();
 	}
-	
 	
 	/*
 	 * There are 4 sorts and each has a separate method. We can simplify it and make it as one method.
@@ -203,4 +207,8 @@ public class Model {
 		
 		// Is this necessary? - Ben
 	}
+
+
+
+
 }
