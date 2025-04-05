@@ -65,8 +65,6 @@ public class Model {
 		return teacherMap.get(teacherUsername).getCompletedCourses();
 	}
 
-
-
 	/*
 	 *  All the methods are void right now, but if they return something change it to something`s type.
 	 *  This might not be final layout
