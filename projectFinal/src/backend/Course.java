@@ -3,6 +3,7 @@ package backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class Course {
 	private HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
@@ -59,6 +60,7 @@ public class Course {
 		return completed;
 	}
 	
+	// this is absolutely an encapsulation issue
 	public HashSet<String> getGradedAssignments() {
 		// go over the assignemtns and check if the assignment is graded
 		// if so add it to the hashset
@@ -88,6 +90,24 @@ public class Course {
 			totalAvg += studentMap.get(key).getStudentAverage(courseName);
 		}
 		return totalAvg / studentMap.size();
+	}
+	
+	protected boolean addStudent(Student student) {
+		String stuUser = student.getUsername();
+		if (studentMap.containsKey(stuUser)) return false;
+		studentMap.put(stuUser, student);
+		return true;
+	}
+	
+	protected boolean removeStudent(Student student) {
+		String stuUser = student.getUsername(); // This could be made to just use a string if necessary.
+		if (!(studentMap.containsKey(stuUser))) return false;
+		studentMap.remove(stuUser);
+		return true;
+	}
+	
+	protected Iterator<Student> getEnrolledStudents() {
+		return studentMap.values().iterator();
 	}
 
 	// public double getStudentAverage(String studentUsername) {

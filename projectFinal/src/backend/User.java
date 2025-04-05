@@ -40,4 +40,17 @@ public class User { // User is both student & teacher - use this for methods use
 		}
 		return completedCourses;
 	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	// Unsure if these 2 should be protected or not
+	protected void addCourse(Course course) {
+		courseMap.put(course.getCourseName(), course);
+	}
+	
+	protected void removeCourse(Course course) {
+		courseMap.remove(course.getCourseName());
+	}
 }
