@@ -24,6 +24,7 @@ public class View {
 			System.out.println("Are you a student or a teacher?\n");
 			System.out.println("1. Student");
 			System.out.println("2. Teacher");
+			System.out.println("3. Import Course List (debug)");
 			System.out.println("0. EXIT");
 			
 			String choice =  scanner.nextLine().strip();
@@ -33,14 +34,18 @@ public class View {
 				String username = scanner.nextLine().strip();
 				showStudentMenu(scanner, model, username);
 
-			}else if(choice.equals("2")) {
+			} else if(choice.equals("2")) {
 				System.out.println("Enter your username: ");
 				String teacherUsername = scanner.nextLine().strip();
 				showTeacherMenu(scanner, teacherUsername, model);
+			} else if (choice.equals("3")) {
+				System.out.println("Please give filename (excluding .txt): ");
+				String filename = scanner.nextLine().strip() + ".txt";
+				model.createCourses(filename);	
 			} else if(choice.equals("0")) {
                 		System.out.println("Thank you for using Gradebook. Goodbye!");
                 		state = false;
-			}else {
+			} else {
 				System.out.println("Invalid choice. Please try again.");
 			}
 		}
@@ -197,16 +202,16 @@ public class View {
 				// removeAssignment(model, username);
 				break;
 			case "5":
-				// addStudent(model, username);
+				addStudent(model, teacherUsername, scanner);
 				break;
 			case "6":
-				// removeStudent(model, username);
+				removeStudent(model, teacherUsername, scanner);
 				break;
 			case "7":
 				// importStudents(model, username);
 				break;	
 			case "8":
-				// viewStudentsEnrolled(model, username);
+				viewStudentsEnrolled(model, teacherUsername, scanner);
 				break;
 			case "9":
 				// addGrades(model, username);
@@ -266,6 +271,36 @@ public class View {
 	public static void calculateStudentCurAverage(Model model, String studentUsername) {
 		double avg = model.calculateStudentCurAverage(studentUsername);
 		System.out.println("Student " + studentUsername + " average: " + avg);
+	}
+	
+	public static void addStudent(Model model, String username, Scanner scanner) {
+		System.out.println("Student Username: "); // username is not what we want btw, but might be used l8r
+		String choiceName = scanner.nextLine().strip();
+		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
+		String choiceCourse = scanner.nextLine().strip();
+		System.out.println(model.addStudent(choiceName, choiceCourse));
+	}
+	
+	public static void removeStudent(Model model, String username, Scanner scanner) {
+		System.out.println("Student Username: "); // username is not what we want btw, but might be used l8r
+		String choiceName = scanner.nextLine().strip();
+		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
+		String choiceCourse = scanner.nextLine().strip();
+		System.out.println(model.removeStudent(choiceName, choiceCourse));
+	}
+	
+	public static void viewStudentsEnrolled(Model model, String username, Scanner scanner) {
+		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
+		String choiceCourse = scanner.nextLine().strip();
+		System.out.println(model.getEnrolledStudents(choiceCourse));
+	}
+	
+	public static void importStudents(Model model, String username, Scanner scanner) {
+		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
+		String choiceCourse = scanner.nextLine().strip();
+		System.out.println("File Name (exclude .txt): "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
+		String choiceFileName = scanner.nextLine().strip() + ".txt";
+		model.importStudentList(choiceCourse, choiceFileName);
 	}
 
 }

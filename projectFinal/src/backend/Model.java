@@ -2,6 +2,11 @@ package backend;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Model {
 
@@ -18,6 +23,7 @@ public class Model {
 	public Model() {
 		fullCourseMap = new HashMap<String, Course>();
 		studentMap = new HashMap<String, Student>();
+		teacherMap = new HashMap<String, Teacher>();
 	}
 	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
@@ -83,18 +89,32 @@ public class Model {
 		// assignment, course should come as a parameter (ig)
 	}
 	
-	public void addStudent() {
+	public String addStudent(String username, String coursename) {
 		// for teachers
 		// adds a student to a course
-				
-		// student, course should come as a parameter (ig)
+		Course course = fullCourseMap.get(coursename);
+		Student student = studentMap.get(username);
+		if (course == null) return ("Course not found.");
+		if (student == null) return ("Student not found");
+		if (course.addStudent(student)) {
+			student.addCourse(course);
+			return ("Successfully added student");
+		}
+		return ("Student already in course!");
 	}
 	
-	public void removeStudent() {
+	public String removeStudent(String username, String coursename) {
 		// for teachers
 		// removes a student from a course
-				
-		// student, course should come as a parameter (ig)
+		Course course = fullCourseMap.get(coursename);
+		Student student = studentMap.get(username);
+		if (course == null) return ("Course not found.");
+		if (student == null) return ("Student not found");
+		if (course.removeStudent(student)) {
+			student.removeCourse(course);
+			return ("Successfully removed student");
+		}
+		return ("Student not in course!");
 	}
 	
 	public void importStudents() {
@@ -104,13 +124,19 @@ public class Model {
 		// students (as a list?), course should come as a parameter (ig)
 	}
 	
-	public void getEnrolledStudents() {
+	public String getEnrolledStudents(String coursename) {
 		// for teachers
 		// returns student list who are enrolled in a course
-	
-		// course should come as a parameter (ig)
+		Course course = fullCourseMap.get(coursename);
+		if (course == null) return ("Course not found.");
+		Iterator<Student> studentIter = course.getEnrolledStudents();
+		String holdFormat = "";
+		while (studentIter.hasNext()) {
+			Student student = studentIter.next(); // Apparently, you have to do this first. Hopefully.
+			holdFormat = holdFormat + student.getPrintFormatted() + "\n";
+		}
+		return holdFormat.strip();
 		
-		// ! watch for escaping reference
 	}
 	
 	public void addGradeForAssignment() {
@@ -207,7 +233,47 @@ public class Model {
 		
 		// Is this necessary? - Ben
 	}
+	
+	public void createCourses(String filename) {
+		// Should this lock itself up after 1 run?
+		try (Scanner scanLine = new Scanner(new File(filename))){
+			while(scanLine.hasNextLine()){
+				// format we get filenames from
+				String line = scanLine.nextLine();
+				if (!(fullCourseMap.containsKey(line))) {
+					fullCourseMap.put(line, new Course(line));
+				}
+				// This originally forced an error if a dupe existed, but I removed it because
+				// there is may be scenarios where duplicates may occur. Now it just handles it.
+				// May undo depending on how rest of the code is developed
+			}
+			scanLine.close();
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 
+	public String importStudentList(String courseName, String filename) {
+		Course course = fullCourseMap.get(courseName);
+		if (course == null) return ("Course not found.");
+		HashSet<String> studentUsernameList = new HashSet<String>();
+		try (Scanner scanLine = new Scanner(new File(filename))){
+			while(scanLine.hasNextLine()){
+				// format we get filenames from
+				String line = scanLine.nextLine();
+				studentUsernameList.add(line);
+			}
+			scanLine.close();
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		for (String i: studentUsernameList) {
+			addStudent(courseName, i);
+		}
+		return ("Student(s) added!");
+	}
 
 
 

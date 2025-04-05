@@ -69,5 +69,9 @@ public class Student extends User {
 	public double getStudentAverage(String courseName) {
 		return studentAverageGrades.get(courseName);
 	}
+	
+	public String getPrintFormatted() {
+		return firstName + " " + lastName + " (" + username + ")";
+	}
 
 }
