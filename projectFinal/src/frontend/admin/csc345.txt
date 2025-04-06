@@ -1,5 +1,0 @@
-CSC345,jjohnson
-mrodriguez
-tnguyen
-akim
-lwilson

@@ -6,13 +6,12 @@ import java.util.Scanner;
 import backend.*;
 
 public class View {
-	public static void main(String[] args) {
-		startGradebook();
+	public View(Model model) {
+		startGradebook(model);
 	}
 	
-	public static void startGradebook() {
+	public static void startGradebook(Model model) {
 
-		Model model = new Model();
 		// do your importing here
 
 
@@ -50,7 +49,7 @@ public class View {
 			}
 		}
 		
-		scanner.close();
+		//scanner.close();
 		
 	}
 	
@@ -244,6 +243,43 @@ public class View {
 				break;
 			case "18":
 				// chooseModeForClassAverages(model, username);
+				HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
+				if(courses.size() == 0) {
+					System.out.println("You are not teaching any course");
+				} else {
+					System.out.println("Your current courses:");
+					int i = 1;
+					for(String course: courses) {
+						System.out.println(i + ") " + course);
+						i++;
+					}
+					System.out.print("Enter a course name: ");
+					String courseName = scanner.nextLine();
+					if(!courses.contains(courseName)) {
+						System.out.println("The course " + courseName + " does not exist.");
+					} else {
+						System.out.println();
+						System.out.println("Modes for calculating class averages:");
+						System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
+						System.out.println("2) The final grade is based on categories and percentages");
+						System.out.print("Choose an option: ");
+						//model.addTeacher(teacherUsername); // for debugging!
+						String option = scanner.nextLine();
+						
+						System.out.println("Courses: \n" + courses + "\n"); // for debugging
+						if(option.strip().equals("1")) {
+							// Final Grade = Total Points Earned/Total Points Possible
+							//model.calculateClassAverage(1, courseName, teacherUsername);
+							
+						} else if(option.strip().equals("2")) {
+							// The final grade is based on categories and percentages
+							// Set up categories
+							System.out.println("Mode 2 debug");
+						} else {
+							System.out.println("Invalid input!");
+						}
+					}
+				}
 				break;
 			case "0":
 				teacherState = false;

@@ -35,6 +35,14 @@ public class Course {
 		return courseName;
 	}
 	
+	public void setStudentMap(HashMap<String, Student> studentMap) {
+		this.studentMap = studentMap;
+	}
+	
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
