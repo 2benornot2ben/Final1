@@ -32,11 +32,10 @@ public class AccountStorage {
 		this.accountList = accountList;
 	}
 	
-	public void setAccount(String username, String password) {
+	public void setAccount(String username, String password, Database database) {
 		privateData.put(username, hashPassword(password)); // more secure encryption needed
-		Model myModel = new Model();
+		Model myModel = new Model(database);
 		modelMap.put(username, myModel);
-		System.out.println(privateData);
 	}
 	public boolean userExist(String user){
 		System.out.println(accountList);
