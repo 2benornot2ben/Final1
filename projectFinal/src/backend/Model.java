@@ -20,10 +20,10 @@ public class Model {
 	
 	
 	// definetely needs a parameter but i dont know yet.
-	public Model() {
-		fullCourseMap = new HashMap<String, Course>();
-		studentMap = new HashMap<String, Student>();
-		teacherMap = new HashMap<String, Teacher>();
+	public Model(Database database) {
+		fullCourseMap = database.getCourseMap();
+		studentMap = database.getStudentMap();
+		teacherMap = database.getTeacherMap();
 	}
 	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
@@ -104,6 +104,7 @@ public class Model {
 	public String removeStudent(String username, String coursename) {
 		// for teachers
 		// removes a student from a course
+		System.out.println(fullCourseMap);
 		Course course = fullCourseMap.get(coursename);
 		Student student = studentMap.get(username);
 		if (course == null) return ("Course not found.");
