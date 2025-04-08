@@ -33,7 +33,7 @@ public class Main {
 						System.out.print("Create your password: ");
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
-						storage.setAccount(username, password);
+						storage.setAccount(username, password, database);
 						System.out.println("Logging in to your account.");
 						storage.openModel(username, password, "student");	
 					} else {
@@ -58,7 +58,7 @@ public class Main {
 						System.out.print("Create your password: ");
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
-						storage.setAccount(username, password);
+						storage.setAccount(username, password, database);
 						System.out.println("Logging in to your account.");
 						storage.openModel(username, password, "teacher");	
 					} else {

@@ -28,7 +28,20 @@ public class Database {
 		readStudents();
 		storage.setAccountList(accountList);
 	}
-	public void createFileNames() {
+	
+	public HashMap<String, Course> getCourseMap() {
+		return courseMap;
+	}
+	
+	public HashMap<String, Teacher> getTeacherMap(){
+		return teacherMap;
+	}
+	
+	public HashMap<String, Student> getStudentMap(){
+		return studentMap;
+	}
+	
+	private void createFileNames() {
 		try (Scanner scanLine = new Scanner(new File("courses.txt"))){
 			while(scanLine.hasNextLine()){
 				// format we get filenames from
@@ -42,7 +55,7 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	public void readCourses() throws FileNotFoundException {
+	private void readCourses() throws FileNotFoundException {
 		HashMap<String, Student> tempStudentMap = new HashMap<String, Student>();
 		for(int i=0; i<fileNames.size(); i++) {
 			File myFile = new File(fileNames.get(i));
@@ -66,11 +79,12 @@ public class Database {
 			course.setStudentMap(tempStudentMap);
 			//assignmenr also should be here
 			courseMap.put(courseName, course);
+			tempStudentMap = new HashMap<String, Student>();
 			myReader.close();
 		}
 	}
 	
-	public void readTeachers() throws FileNotFoundException{
+	private void readTeachers() throws FileNotFoundException{
 		File myFile = new File("teachers.txt");
 		Scanner myReader = new Scanner(myFile);
 		while(myReader.hasNextLine()) {
@@ -80,7 +94,7 @@ public class Database {
 		}
 	}
 	
-	public void readStudents() throws FileNotFoundException{
+	private void readStudents() throws FileNotFoundException{
 		File myFile = new File("students.txt");
 		Scanner myReader = new Scanner(myFile);
 		while(myReader.hasNextLine()) {
