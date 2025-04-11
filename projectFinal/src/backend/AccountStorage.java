@@ -28,17 +28,22 @@ public class AccountStorage {
 		modelMap = new HashMap<String, Model>();
 		privateData = new HashMap<String, String>();
 	}
-	public void setAccountList(HashMap<String, User> accountList) {
+
+	protected void setAccountList(HashMap<String, User> accountList) {
 		this.accountList = accountList;
 	}
 	
-	public void setAccount(String username, String password, Database database) {
+	public void setAccount(String username, String password, Database database, boolean isTeacher) {
 		privateData.put(username, hashPassword(password)); // more secure encryption needed
-		Model myModel = new Model(database);
+		User holdUser = database.returnCorrectUser(username);
+		Model myModel = new Model(database, holdUser);
 		modelMap.put(username, myModel);
 	}
-	public boolean userExist(String user){
-		System.out.println(accountList);
+	// if profession doesnt match "student" or "teacher", it checks everyone instead.
+	public boolean userExist(String user, String profession) {
+		if (profession.equals("teacher") && !(accountList.get(user) instanceof Teacher)) return false;
+		if (profession.equals("student") && !(accountList.get(user) instanceof Student)) return false;
+
 		return accountList.containsKey(user);
 	}
 	
@@ -60,9 +65,11 @@ public class AccountStorage {
 	
 	//@SuppressWarnings("unused")
 	public void openModel(String user, String password, String person){
-		Model getModel = modelMap.get(user);
-		// Front end can call this method, so no way we're not validating this.
-		View newView = new View(getModel);
+		if (canLogIn(user, password)) {
+			Model getModel = modelMap.get(user);
+			// Front end can call this method, so no way we're not validating this.
+			View newView = new View(getModel, person);
+		}
 	}
 	
 	

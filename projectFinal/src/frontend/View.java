@@ -6,19 +6,21 @@ import java.util.Scanner;
 import backend.*;
 
 public class View {
-	public View(Model model) {
-		startGradebook(model);
+	public View(Model model, String role) {
+		startGradebook(model, role);
 	}
 	
-	public static void startGradebook(Model model) {
+	public static void startGradebook(Model model, String role) {
 
 		// do your importing here
 
 
 		Scanner scanner =  new Scanner(System.in);
-		boolean state =  true;
-		
-		while(state) {
+		boolean running =  true;
+		if (role.equals("teacher")) showTeacherMenu(scanner, model);
+		else showStudentMenu(scanner, model);
+		/*
+		while(running) {
 			System.out.println("\nWelcome to Gradebook!\n");
 			System.out.println("Are you a student or a teacher?\n");
 			System.out.println("1. Student");
@@ -43,19 +45,22 @@ public class View {
 				model.createCourses(filename);	
 			} else if(choice.equals("0")) {
                 		System.out.println("Thank you for using Gradebook. Goodbye!");
-                		state = false;
+                		running = false;
 			} else {
 				System.out.println("Invalid choice. Please try again.");
 			}
 		}
+		*/
 		
 		//scanner.close();
 		
 	}
 	
-	public static void showStudentMenu(Scanner scanner, Model model, String studentUsername) {
+	public static void showStudentMenu(Scanner scanner, Model model) {
 		boolean studentState = true;
-		
+		String studentUsername = model.getCurrentUsersName();
+		System.out.println("Welcome " + studentUsername);
+		String courseName = ""; // we'll want this soon probably
 		while(studentState) {
             		System.out.println("\nStudent Menu:\n");
 			System.out.println("1. To view courses");
@@ -64,7 +69,6 @@ public class View {
 			System.out.println("0. Return to main menu");
 			
 			String choice = scanner.nextLine().strip();
-			String courseName;
 			
 			switch(choice) {
 				case "1":
@@ -88,7 +92,7 @@ public class View {
 					break;
 				default:
 					System.out.println("Invalid choice. Please try again.");
-					showStudentMenu(scanner, model, studentUsername);
+					//showStudentMenu(scanner, model, studentUsername);
 					break;
 			}
 		}
@@ -161,133 +165,138 @@ public class View {
 		System.out.println("Student " + username + " GPA: " + gpa);
 	}
 
-	public static void showTeacherMenu(Scanner scanner, String teacherUsername, Model model) {
-		System.out.println("\nTeacher Menu:\n");
-		System.out.println("1. View completed courses)");
-		System.out.println("2. View current courses");
-		System.out.println("3. Add assignment to a course");
-		System.out.println("4. Remove assignment from a course");
-		System.out.println("5. Add student to a course");
-		System.out.println("6. Remove student from a course");
-		System.out.println("7. Import list of students from file");
-		System.out.println("8. View students enrolled in a course");
-		System.out.println("8. Add grades for students for an assignment");
-		System.out.println("9. Calculate class averages and medians on assignments");
-		System.out.println("10. Calculate a student's current average");
-		System.out.println("11. Sort students by first name");
-		System.out.println("12. Sort students by last name");
-		System.out.println("13. Sort students by username");
-		System.out.println("14. Sort students by grades on an assignment");
-		System.out.println("15. Put students in groups");
-		System.out.println("16. Assign final grades (A, B, C, D, E) to students");
-		System.out.println("17. View ungraded assignments");
-		System.out.println("18. Choose a mode for calculating class averages");
-		System.out.println("0. Return to main menu");
-		
-		String choice = scanner.nextLine().strip();
+	public static void showTeacherMenu(Scanner scanner, Model model) {
 		boolean teacherState = true;
-		
-		switch(choice) {
-			case "1":
-				viewCompletedCourses(model, teacherUsername);
-				break;
-			case "2":
-				viewCurrentCourses(model, teacherUsername);
-				break;
-			case "3":
-				// addAssignment(model, username);
-				break;
-			case "4":
-				// removeAssignment(model, username);
-				break;
-			case "5":
-				addStudent(model, teacherUsername, scanner);
-				break;
-			case "6":
-				removeStudent(model, teacherUsername, scanner);
-				break;
-			case "7":
-				// importStudents(model, username);
-				break;	
-			case "8":
-				viewStudentsEnrolled(model, teacherUsername, scanner);
-				break;
-			case "9":
-				// addGrades(model, username);
-				break;
-			case "10":
-				System.out.println("Enter student username: ");
-				String studentUsername = scanner.nextLine().strip();
-				calculateStudentCurAverage(model, studentUsername);
-				break;
-			case "11":
-				// sortStudentsByName(model, username);
-				break;
-			case "12":
-				// sortStudentsByLastName(model, username);
-				break;
-			case "13":
-				// sortStudentsByUsername(model, username);
-				break;
-			case "14":
-				// sortStudentsByAssignment(model, username);
-				break;
-			case "15":
-				// putStudentsInGroups(model, username);
-				break;	
-			case "16":
-				// assignFinalGrades(model, username);
-				break;
-			case "17":
-				// viewUngradedAssignments(model, username);
-				break;
-			case "18":
-				// chooseModeForClassAverages(model, username);
-				HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
-				if(courses.size() == 0) {
-					System.out.println("You are not teaching any course");
-				} else {
-					System.out.println("Your current courses:");
-					int i = 1;
-					for(String course: courses) {
-						System.out.println(i + ") " + course);
-						i++;
-					}
-					System.out.print("Enter a course name: ");
-					String courseName = scanner.nextLine();
-					if(!courses.contains(courseName)) {
-						System.out.println("The course " + courseName + " does not exist.");
+		String teacherUsername = model.getCurrentUsersName();
+		System.out.println("Welcome " + teacherUsername);
+		String courseName = ""; // we'll want this soon probably
+		while (teacherState) {
+			System.out.println("\nTeacher Menu:\n");
+			System.out.println("1. View completed courses)");
+			System.out.println("2. View current courses");
+			System.out.println("3. Add assignment to a course");
+			System.out.println("4. Remove assignment from a course");
+			System.out.println("5. Add student to a course");
+			System.out.println("6. Remove student from a course");
+			System.out.println("7. Import list of students from file");
+			System.out.println("8. View students enrolled in a course");
+			System.out.println("8. Add grades for students for an assignment");
+			System.out.println("9. Calculate class averages and medians on assignments");
+			System.out.println("10. Calculate a student's current average");
+			System.out.println("11. Sort students by first name");
+			System.out.println("12. Sort students by last name");
+			System.out.println("13. Sort students by username");
+			System.out.println("14. Sort students by grades on an assignment");
+			System.out.println("15. Put students in groups");
+			System.out.println("16. Assign final grades (A, B, C, D, E) to students");
+			System.out.println("17. View ungraded assignments");
+			System.out.println("18. Choose a mode for calculating class averages");
+			System.out.println("0. Return to main menu");
+			
+			String choice = scanner.nextLine().strip();
+			
+			switch(choice) {
+				case "1":
+					viewCompletedCourses(model, teacherUsername);
+					break;
+				case "2":
+					viewCurrentCourses(model, teacherUsername);
+					break;
+				case "3":
+					// addAssignment(model, username);
+					break;
+				case "4":
+					// removeAssignment(model, username);
+					break;
+				case "5":
+					addStudent(model, teacherUsername, scanner);
+					break;
+				case "6":
+					removeStudent(model, teacherUsername, scanner);
+					break;
+				case "7":
+					// importStudents(model, username);
+					break;	
+				case "8":
+					viewStudentsEnrolled(model, teacherUsername, scanner);
+					break;
+				case "9":
+					// addGrades(model, username);
+					break;
+				case "10":
+					System.out.println("Enter student username: ");
+					String studentUsername = scanner.nextLine().strip();
+					calculateStudentCurAverage(model, studentUsername);
+					break;
+				case "11":
+					// sortStudentsByName(model, username);
+					break;
+				case "12":
+					// sortStudentsByLastName(model, username);
+					break;
+				case "13":
+					// sortStudentsByUsername(model, username);
+					break;
+				case "14":
+					// sortStudentsByAssignment(model, username);
+					break;
+				case "15":
+					// putStudentsInGroups(model, username);
+					break;	
+				case "16":
+					// assignFinalGrades(model, username);
+					break;
+				case "17":
+					// viewUngradedAssignments(model, username);
+					break;
+				case "18":
+					// chooseModeForClassAverages(model, username);
+					HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
+					if(courses.size() == 0) {
+						System.out.println("You are not teaching any course");
 					} else {
-						System.out.println();
-						System.out.println("Modes for calculating class averages:");
-						System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
-						System.out.println("2) The final grade is based on categories and percentages");
-						System.out.print("Choose an option: ");
-						//model.addTeacher(teacherUsername); // for debugging!
-						String option = scanner.nextLine();
-						
-						System.out.println("Courses: \n" + courses + "\n"); // for debugging
-						if(option.strip().equals("1")) {
-							// Final Grade = Total Points Earned/Total Points Possible
-							//model.calculateClassAverage(1, courseName, teacherUsername);
-							
-						} else if(option.strip().equals("2")) {
-							// The final grade is based on categories and percentages
-							// Set up categories
-							System.out.println("Mode 2 debug");
+						System.out.println("Your current courses:");
+						int i = 1;
+						for(String course: courses) {
+							System.out.println(i + ") " + course);
+							i++;
+						}
+						System.out.print("Enter a course name: ");
+						String courseNamez = scanner.nextLine();
+						if(!courses.contains(courseNamez)) {
+							System.out.println("The course " + courseNamez + " does not exist.");
 						} else {
-							System.out.println("Invalid input!");
+							System.out.println();
+							System.out.println("Modes for calculating class averages:");
+							System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
+							System.out.println("2) The final grade is based on categories and percentages");
+							System.out.print("Choose an option: ");
+							//model.addTeacher(teacherUsername); // for debugging!
+							String option = scanner.nextLine();
+							
+							System.out.println("Courses: \n" + courses + "\n"); // for debugging
+							if(option.strip().equals("1")) {
+								// Final Grade = Total Points Earned/Total Points Possible
+								//model.calculateClassAverage(1, courseName, teacherUsername);
+								
+							} else if(option.strip().equals("2")) {
+								// The final grade is based on categories and percentages
+								// Set up categories
+								System.out.println("Mode 2 debug");
+							} else {
+								System.out.println("Invalid input!");
+							}
 						}
 					}
-				}
-				break;
-			case "0":
-				teacherState = false;
-				break;
-			default:
-				System.out.println("Invalid choice. Please try again.");
-				showTeacherMenu(scanner, teacherUsername, model);
-				break;
+					break;
+				case "0":
+					teacherState = false;
+					break;
+				default:
+					System.out.println("Invalid choice. Please try again.");
+					//showTeacherMenu(scanner, teacherUsername, model);
+					break;
+			}
 		}
 	}
 
