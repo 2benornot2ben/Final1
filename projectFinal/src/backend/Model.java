@@ -12,18 +12,17 @@ public class Model {
 
 	// this represesnts all the courses.
 	private HashMap<String, Course> fullCourseMap;	// str is the course name.
-
-
 	private HashMap<String, Student> studentMap; // str is the username
-
 	private HashMap<String, Teacher> teacherMap; // str is the username
+	private User personUsing;
 	
 	
 	// definetely needs a parameter but i dont know yet.
-	public Model() {
-		fullCourseMap = new HashMap<String, Course>();
-		studentMap = new HashMap<String, Student>();
-		teacherMap = new HashMap<String, Teacher>();
+	public Model(Database database, User person) {
+		fullCourseMap = database.getCourseMap();
+		studentMap = database.getStudentMap();
+		teacherMap = database.getTeacherMap();
+		personUsing = person;
 	}
 	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
@@ -65,8 +64,6 @@ public class Model {
 		return teacherMap.get(teacherUsername).getCompletedCourses();
 	}
 
-
-
 	/*
 	 *  All the methods are void right now, but if they return something change it to something`s type.
 	 *  This might not be final layout
@@ -106,6 +103,7 @@ public class Model {
 	public String removeStudent(String username, String coursename) {
 		// for teachers
 		// removes a student from a course
+		System.out.println(fullCourseMap);
 		Course course = fullCourseMap.get(coursename);
 		Student student = studentMap.get(username);
 		if (course == null) return ("Course not found.");
@@ -273,6 +271,33 @@ public class Model {
 			addStudent(courseName, i);
 		}
 		return ("Student(s) added!");
+	}
+	
+	// This function should be called on just about everything.
+	// courseName should be "" if it does not relate to a specific course.
+	// premissionreq works like this: 0 = student, 1 = teacher, 2 = both. It will validate they meet this number.
+	private boolean validateAccess(String courseName, int premissionReq) {
+		if (!(courseName.equals(""))) {
+			if (personUsing instanceof Teacher) {
+				// Note this is a not
+				if (!(fullCourseMap.get(courseName).getTeacher().equals(personUsing))) return false;
+			} else {
+				// Also a not
+				if (!(fullCourseMap.get(courseName).isEnrolled((Student) personUsing))) return false;
+			}
+		}
+		if (personUsing instanceof Teacher && premissionReq < 1) return false;
+		if (personUsing instanceof Student && premissionReq == 1) return false;
+		return true;
+	}
+	
+	public String getCurrentUsersName() {
+		return personUsing.getUsername();
+	}
+	
+	// This method was actually abandoned, but I imagine it might be used later.
+	public boolean getIsTeacher() {
+		return (personUsing instanceof Teacher);
 	}
 
 

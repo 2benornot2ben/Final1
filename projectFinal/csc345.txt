@@ -1,0 +1,5 @@
+CSC345,jjohnson
+Marci,Rodriguez,mrodriguez
+Timur,Nguyen,tnguyen
+Anita,Kim,akim
+Lebron,Wilson,lwilson

@@ -2,6 +2,7 @@ package backend;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class User { // User is both student & teacher - use this for methods used by both.
 	protected String username;
@@ -53,4 +54,23 @@ public class User { // User is both student & teacher - use this for methods use
 	protected void removeCourse(Course course) {
 		courseMap.remove(course.getCourseName());
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(username);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		return Objects.equals(username, other.username);
+	}
+	
+	
 }

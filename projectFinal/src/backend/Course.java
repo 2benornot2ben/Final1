@@ -35,6 +35,14 @@ public class Course {
 		return courseName;
 	}
 	
+	public void setStudentMap(HashMap<String, Student> studentMap) {
+		this.studentMap = studentMap;
+	}
+	
+	public void setTeacher(Teacher teacher) {
+		this.teacher = teacher;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -108,6 +116,14 @@ public class Course {
 	
 	protected Iterator<Student> getEnrolledStudents() {
 		return studentMap.values().iterator();
+	}
+	
+	protected Teacher getTeacher() {
+		return teacher;
+	}
+	
+	public boolean isEnrolled(Student student) {
+		return studentMap.containsKey(student.getUsername());
 	}
 
 	// public double getStudentAverage(String studentUsername) {
