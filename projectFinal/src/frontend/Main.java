@@ -28,6 +28,7 @@ public class Main {
 				System.out.println("You are about to log into your student account");
 				System.out.print("Enter a username: ");
 				String username = getInput.nextLine();
+
 				if(storage.userExist(username, "student")) {
 					if(storage.needPassword(username)) {
 						System.out.print("Create your password: ");
