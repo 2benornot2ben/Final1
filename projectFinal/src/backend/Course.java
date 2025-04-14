@@ -99,6 +99,21 @@ public class Course {
 		}
 		return totalAvg / studentMap.size();
 	}
+  
+  /*
+	 * UPDATE: Behruz
+	 * -  created to return student objects from studentMap
+	 * to use them for sorting in Model.java
+	 * */
+	
+	public ArrayList<Student> getStudentMap(){
+		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
+		for(Student student : studentMap.values()) {
+			copyStudentMap.add(student);
+		}
+		
+		return copyStudentMap;
+	}
 	
 	protected boolean addStudent(Student student) {
 		String stuUser = student.getUsername();
@@ -129,5 +144,4 @@ public class Course {
 	// public double getStudentAverage(String studentUsername) {
 	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
 	// }
-
 }

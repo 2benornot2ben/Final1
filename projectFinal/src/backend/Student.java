@@ -73,5 +73,4 @@ public class Student extends User {
 	public String getPrintFormatted() {
 		return firstName + " " + lastName + " (" + username + ")";
 	}
-
 }

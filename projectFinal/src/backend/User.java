@@ -71,6 +71,4 @@ public class User { // User is both student & teacher - use this for methods use
 		User other = (User) obj;
 		return Objects.equals(username, other.username);
 	}
-	
-	
 }
