@@ -28,7 +28,6 @@ public class AccountStorage {
 		modelMap = new HashMap<String, Model>();
 		privateData = new HashMap<String, String>();
 	}
-
 	protected void setAccountList(HashMap<String, User> accountList) {
 		this.accountList = accountList;
 	}
@@ -43,7 +42,6 @@ public class AccountStorage {
 	public boolean userExist(String user, String profession) {
 		if (profession.equals("teacher") && !(accountList.get(user) instanceof Teacher)) return false;
 		if (profession.equals("student") && !(accountList.get(user) instanceof Student)) return false;
-
 		return accountList.containsKey(user);
 	}
 	
