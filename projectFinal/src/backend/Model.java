@@ -1,11 +1,13 @@
 package backend;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Model {
@@ -28,7 +30,6 @@ public class Model {
 	
 	// STUDENT METHODS 
 	public HashSet<String> getGradedAssignments(String courseName) {
-		
 		Course course = fullCourseMap.get(courseName);
 		return course.getGradedAssignments(); // I believe no escaping reference here but could someone please confirm?
 	}

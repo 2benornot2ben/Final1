@@ -15,6 +15,7 @@ public class Course {
 	private HashMap<String, ArrayList<Student>> groupList; // String is "group name"
 	
 	public Course(String courseName) {
+		this.completed = false;
 		this.courseName = courseName;
 		assignmentMap = new HashMap<String, Assignment>();
 		studentMap = new HashMap<String, Student>();
@@ -25,6 +26,7 @@ public class Course {
 	// This is meant to be used for IMPORTING.
 	protected Course(String courseName, HashMap<String, Assignment> assignmentMap,
 			HashMap<String, Student> studentMap, HashMap<String, ArrayList<Student>> groupMap) {
+		this.completed = false; // May be changed later
 		this.courseName = courseName;
 		this.assignmentMap = assignmentMap; // escaping reference; will handle it later when we actually use it.
 		this.studentMap = studentMap; // escaping reference; will handle it later when we actually use it.
