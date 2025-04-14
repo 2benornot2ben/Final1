@@ -1,5 +1,6 @@
 package frontend;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -229,13 +230,49 @@ public class View {
 					calculateStudentCurAverage(model, studentUsername);
 					break;
 				case "11":
-					// sortStudentsByName(model, username);
+					System.out.println("Enter course name: ");
+					String courseNameForSortFirst = scanner.nextLine().strip();
+					ArrayList<Student> sortedStudentsByFirst = model.sortByFirstName(courseNameForSortFirst);
+					if (sortedStudentsByFirst == null) {
+				        System.out.println("Course not found.");
+				    } else if (sortedStudentsByFirst.isEmpty()) {
+				        System.out.println("No students enrolled in " + courseNameForSortFirst);
+				    } else {
+				        System.out.println("Students sorted by first name:");
+				        for (Student student : sortedStudentsByFirst) {
+				            System.out.println(student.getPrintFormatted());
+				        }
+				    }
 					break;
 				case "12":
-					// sortStudentsByLastName(model, username);
+					System.out.println("Enter course name: ");
+					String courseNameForSortLast = scanner.nextLine().strip();
+					ArrayList<Student> sortedStudentsByLast = model.sortByFirstName(courseNameForSortLast);
+					if (sortedStudentsByLast == null) {
+				        System.out.println("Course not found.");
+				    } else if (sortedStudentsByLast.isEmpty()) {
+				        System.out.println("No students enrolled in " + courseNameForSortLast);
+				    } else {
+				        System.out.println("Students sorted by last name:");
+				        for (Student student : sortedStudentsByLast) {
+				            System.out.println(student.getPrintFormatted());
+				        }
+				    }
 					break;
 				case "13":
-					// sortStudentsByUsername(model, username);
+					System.out.println("Enter course name: ");
+					String courseNameForSortUser = scanner.nextLine().strip();
+					ArrayList<Student> sortedStudentsByUser= model.sortByFirstName(courseNameForSortUser);
+					if (sortedStudentsByUser == null) {
+				        System.out.println("Course not found.");
+				    } else if (sortedStudentsByUser.isEmpty()) {
+				        System.out.println("No students enrolled in " + courseNameForSortUser);
+				    } else {
+				        System.out.println("Students sorted by username:");
+				        for (Student student : sortedStudentsByUser) {
+				            System.out.println(student.getPrintFormatted());
+				        }
+				    }
 					break;
 				case "14":
 					// sortStudentsByAssignment(model, username);
@@ -247,7 +284,17 @@ public class View {
 					// assignFinalGrades(model, username);
 					break;
 				case "17":
-					// viewUngradedAssignments(model, username);
+					System.out.println("Enter course name: ");
+					String viewUngradedAssignments = scanner.nextLine().strip();
+					HashSet<String> ungradedAssignments= model.getUngradedAssignments(viewUngradedAssignments);
+					if (ungradedAssignments == null || ungradedAssignments.isEmpty()) {
+				        System.out.println("Ungraded assignments not found.");
+				    } else {
+				        System.out.println("Ungraded assignments:");
+				        for (String assignment : ungradedAssignments) {
+				            System.out.println(assignment);
+				        }
+				    }
 					break;
 				case "18":
 					// chooseModeForClassAverages(model, username);

@@ -1,11 +1,13 @@
 package backend;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Model {
@@ -28,7 +30,6 @@ public class Model {
 	
 	// STUDENT METHODS 
 	public HashSet<String> getGradedAssignments(String courseName) {
-		
 		Course course = fullCourseMap.get(courseName);
 		return course.getGradedAssignments(); // I believe no escaping reference here but could someone please confirm?
 	}
@@ -164,28 +165,55 @@ public class Model {
 	 * There are 4 sorts and each has a separate method. We can simplify it and make it as one method.
 	 */
 	
-	public void sortByFirstName() {
-		// for teachers
-		// sorts students by their first name
+	public ArrayList<Student> sortByFirstName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
 		
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getFirstName().compareToIgnoreCase(s2.getFirstName());
+	        }
+	    });
+		
+	    return students;
 	}
 	
-	public void sortByLastName() {
-		// for teachers
-		// sorts students by their last name
-				
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+	public ArrayList<Student> sortByLastName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
+		
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getLastName().compareToIgnoreCase(s2.getLastName());
+	        }
+	    });
+		
+		return students;
 	}
 	
-	public void sortByUserName() {
-		// for teachers
-		// sorts students by their username
-				
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+	public ArrayList<Student> sortByUserName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
+		
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getUsername().compareToIgnoreCase(s2.getUsername());
+	        }
+	    });
+		
+		return students;
 	}
 	
 	public void sortByGrades() {
@@ -299,7 +327,4 @@ public class Model {
 	public boolean getIsTeacher() {
 		return (personUsing instanceof Teacher);
 	}
-
-
-
 }

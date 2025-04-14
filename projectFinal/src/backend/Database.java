@@ -23,9 +23,9 @@ public class Database {
 		courseMap = new HashMap<String, Course>();
 		fileNames = new ArrayList<String>();
 		createFileNames();
-		readCourses();
 		readTeachers();
 		readStudents();
+		readCourses();
 		storage.setAccountList(accountList);
 	}
 	
@@ -76,13 +76,17 @@ public class Database {
 				String name = studentInfo[0];
 				String last = studentInfo[1];
 				String username = studentInfo[2];
-				tempStudentMap.put(username, new Student(name, last, username));	
+				tempStudentMap.put(username, studentMap.get(username));	
 			}
 			Course course = new Course(courseName);
-			course.setTeacher(new Teacher(teacherName));
+			course.setTeacher(teacherMap.get(teacherName));
 			// there might be an error.
 			course.setStudentMap(tempStudentMap);
-			//assignmenr also should be here
+			for (Student j : tempStudentMap.values()) {
+				j.addCourse(course);
+			}
+			teacherMap.get(teacherName).addCourse(course);
+			//assignment also should be here
 			courseMap.put(courseName, course);
 			tempStudentMap = new HashMap<String, Student>();
 			myReader.close();
@@ -114,3 +118,4 @@ public class Database {
 			accountList.put(username, holdStu);
 		}
 	}
+}
