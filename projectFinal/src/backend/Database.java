@@ -29,6 +29,7 @@ public class Database {
 		storage.setAccountList(accountList);
 	}
 	
+	// How is this ok.
 	public HashMap<String, Course> getCourseMap() {
 		return courseMap;
 	}
@@ -39,6 +40,10 @@ public class Database {
 	
 	public HashMap<String, Student> getStudentMap(){
 		return studentMap;
+	}
+	
+	protected User returnCorrectUser(String username) {
+		return accountList.get(username);
 	}
 	
 	private void createFileNames() {
@@ -89,8 +94,9 @@ public class Database {
 		Scanner myReader = new Scanner(myFile);
 		while(myReader.hasNextLine()) {
 			String teacherUsername = myReader.nextLine();
-			teacherMap.put(teacherUsername, new Teacher(teacherUsername));
-			accountList.put(teacherUsername, new Teacher(teacherUsername));
+			Teacher holdTea = new Teacher(teacherUsername);
+			teacherMap.put(teacherUsername, holdTea);
+			accountList.put(teacherUsername, holdTea);
 		}
 	}
 	
@@ -103,8 +109,9 @@ public class Database {
 			String name = studentInfo[0];
 			String last = studentInfo[1];
 			String username = studentInfo[2];
-			studentMap.put(username, new Student(name, last, username));
-			accountList.put(username, new Student(name, last, username));
+			Student holdStu = new Student(name, last, username);
+			studentMap.put(username, holdStu);
+			accountList.put(username, holdStu);
 		}
 	}
 }

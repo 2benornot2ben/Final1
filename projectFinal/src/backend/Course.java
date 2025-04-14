@@ -99,9 +99,8 @@ public class Course {
 		}
 		return totalAvg / studentMap.size();
 	}
-	
-	
-	/*
+  
+  /*
 	 * UPDATE: Behruz
 	 * -  created to return student objects from studentMap
 	 * to use them for sorting in Model.java
@@ -133,9 +132,16 @@ public class Course {
 	protected Iterator<Student> getEnrolledStudents() {
 		return studentMap.values().iterator();
 	}
+	
+	protected Teacher getTeacher() {
+		return teacher;
+	}
+	
+	public boolean isEnrolled(Student student) {
+		return studentMap.containsKey(student.getUsername());
+	}
 
 	// public double getStudentAverage(String studentUsername) {
 	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
 	// }
-
 }

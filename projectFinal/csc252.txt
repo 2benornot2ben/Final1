@@ -1,0 +1,5 @@
+CSC252,zwilliams
+Ding,Lee,dlee
+Key,Patel,kpatel
+Sanji,Gupta,sgupta
+John,Chen,jchen
