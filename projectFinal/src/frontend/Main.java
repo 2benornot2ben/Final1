@@ -28,12 +28,12 @@ public class Main {
 				System.out.println("You are about to log into your student account");
 				System.out.print("Enter a username: ");
 				String username = getInput.nextLine();
-				if(storage.userExist(username)) {
+				if(storage.userExist(username, "student")) {
 					if(storage.needPassword(username)) {
 						System.out.print("Create your password: ");
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
-						storage.setAccount(username, password, database);
+						storage.setAccount(username, password, database, false);
 						System.out.println("Logging in to your account.");
 						storage.openModel(username, password, "student");	
 					} else {
@@ -53,12 +53,12 @@ public class Main {
 				System.out.println("You are about to log into your teacher account");
 				System.out.print("Enter a username: ");
 				String username = getInput.nextLine();
-				if(storage.userExist(username)) {
+				if(storage.userExist(username, "teacher")) {
 					if(storage.needPassword(username)) {
 						System.out.print("Create your password: ");
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
-						storage.setAccount(username, password, database);
+						storage.setAccount(username, password, database, true);
 						System.out.println("Logging in to your account.");
 						storage.openModel(username, password, "teacher");	
 					} else {
