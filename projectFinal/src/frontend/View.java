@@ -1,6 +1,7 @@
 package frontend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -171,6 +172,30 @@ public class View {
 		String teacherUsername = model.getCurrentUsersName();
 		System.out.println("Welcome " + teacherUsername);
 		String courseName = ""; // we'll want this soon probably
+		boolean modeChosen = true;
+		int mode;
+		if(!modeChosen) {
+			mode = chooseMode(model, teacherUsername, scanner);
+			if(mode > 0) {
+				modeChosen = true;
+			}
+		}
+		HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
+		System.out.println("Your current courses:");
+		int j = 1;
+		for(String course: courses) {
+			System.out.println(j + ") " + course);
+			j++;
+		}
+		System.out.print("Enter a course name: ");
+		String nameCourse = scanner.nextLine();
+		if(!courses.contains(nameCourse)) {
+			System.out.println("The course " + nameCourse + " does not exist.");
+			teacherState = false;
+		} else {
+			courseName = nameCourse;
+		}
+		
 		while (teacherState) {
 			System.out.println("\nTeacher Menu:\n");
 			System.out.println("1. View completed courses)");
@@ -279,6 +304,24 @@ public class View {
 					break;
 				case "15":
 					// putStudentsInGroups(model, username);
+					System.out.println("How many groups do you want: ");
+					String num = scanner.nextLine().strip();
+					if(isNumeric(num)) {
+						if(model.canCreateGroups(courseName, Integer.parseInt(num))) {
+							HashMap<String, ArrayList<String>> groups = model.putInGroups(courseName, Integer.parseInt(num));
+							for(String key : groups.keySet()) {
+								System.out.println(key + ":");
+								for(int i = 0; i < groups.get(key).size(); i++) {
+									System.out.println("" + (i+1) +" "+ groups.get(key).get(i));
+								}
+							}
+						}
+						else {
+							System.out.println("Cannot create groups. Number of groups is more than number of students.");
+						}
+					} else {
+						System.out.println("Your input is invalid");
+					}
 					break;	
 				case "16":
 					// assignFinalGrades(model, username);
@@ -298,20 +341,20 @@ public class View {
 					break;
 				case "18":
 					// chooseModeForClassAverages(model, username);
-					HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
-					if(courses.size() == 0) {
+					HashSet<String> courses1 = model.getCurCoursesTeacher(teacherUsername);
+					if(courses1.size() == 0) {
 						System.out.println("You are not teaching any course");
 					} else {
 						System.out.println("Your current courses:");
 						int i = 1;
-						for(String course: courses) {
+						for(String course: courses1) {
 							System.out.println(i + ") " + course);
 							i++;
 						}
 						System.out.print("Enter a course name: ");
-						String courseNamez = scanner.nextLine();
-						if(!courses.contains(courseNamez)) {
-							System.out.println("The course " + courseNamez + " does not exist.");
+						String nameCourse1 = scanner.nextLine();
+						if(!courses.contains(nameCourse1)) {
+							System.out.println("The course " + nameCourse1 + " does not exist.");
 						} else {
 							System.out.println();
 							System.out.println("Modes for calculating class averages:");
@@ -326,6 +369,7 @@ public class View {
 								// Final Grade = Total Points Earned/Total Points Possible
 								//model.calculateClassAverage(1, courseName, teacherUsername);
 								
+								
 							} else if(option.strip().equals("2")) {
 								// The final grade is based on categories and percentages
 								// Set up categories
@@ -335,6 +379,7 @@ public class View {
 							}
 						}
 					}
+
 					break;
 				case "0":
 					teacherState = false;
@@ -346,7 +391,64 @@ public class View {
 			}
 		}
 	}
+	
+	private static int chooseMode(Model model, String teacherUsername, Scanner scanner) {
+		HashSet<String> courses = model.getCurCoursesTeacher(teacherUsername);
+		if(courses.size() == 0) {
+			System.out.println("You are not teaching any course");
+		} else {
+			System.out.println("Your current courses:");
+			int i = 1;
+			for(String course: courses) {
+				System.out.println(i + ") " + course);
+				i++;
+			}
+			System.out.print("Enter a course name: ");
+			String nameCourse = scanner.nextLine();
+			if(!courses.contains(nameCourse)) {
+				System.out.println("The course " + nameCourse + " does not exist.");
+			} else {
+				System.out.println();
+				System.out.println("Modes for calculating class averages:");
+				System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
+				System.out.println("2) The final grade is based on categories and percentages");
+				System.out.print("Choose an option: ");
+				//model.addTeacher(teacherUsername); // for debugging!
+				String option = scanner.nextLine();
+				
+				System.out.println("Courses: \n" + courses + "\n"); // for debugging
+				if(option.strip().equals("1")) {
+					// Final Grade = Total Points Earned/Total Points Possible
+					//model.calculateClassAverage(1, courseName, teacherUsername);
+					model.calculateClassAverage(1, nameCourse);					
+					return 1;
+					
+				} else if(option.strip().equals("2")) {
+					// The final grade is based on categories and percentages
+					// Set up categories
+					model.calculateClassAverage(2, nameCourse);
+					return 2;
+				} else {
+					System.out.println("Invalid input!");
+				}
+			}
+		}
+		return 0;
+	}
 
+	
+	private static boolean isNumeric(String num) {
+		/* This functions as an easy way to see if what the user gave
+		 * is in fact an integer without crashing the program.
+		 * Useful for having them pick an option via number. */
+		boolean numeric = true;
+        try {
+            Integer.parseInt(num);
+        } catch (NumberFormatException e) {
+            numeric = false;
+        }
+        return numeric;
+	}
 	public static void viewCompletedCourses(Model model, String teacherUsername) {
 		HashSet<String> completedCourses = model.getCompletedCoursesTeacher(teacherUsername);
 		for (String course : completedCourses) {
