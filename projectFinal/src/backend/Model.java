@@ -1,35 +1,35 @@
 package backend;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Model {
 
 	// this represesnts all the courses.
 	private HashMap<String, Course> fullCourseMap;	// str is the course name.
-
-
 	private HashMap<String, Student> studentMap; // str is the username
-
 	private HashMap<String, Teacher> teacherMap; // str is the username
+	private User personUsing;
 	
 	
 	// definetely needs a parameter but i dont know yet.
-	public Model(Database database) {
+	public Model(Database database, User person) {
 		fullCourseMap = database.getCourseMap();
 		studentMap = database.getStudentMap();
 		teacherMap = database.getTeacherMap();
+		personUsing = person;
 	}
 	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
 	// STUDENT METHODS 
 	public HashSet<String> getGradedAssignments(String courseName) {
-		
 		Course course = fullCourseMap.get(courseName);
 		return course.getGradedAssignments(); // I believe no escaping reference here but could someone please confirm?
 	}
@@ -165,28 +165,55 @@ public class Model {
 	 * There are 4 sorts and each has a separate method. We can simplify it and make it as one method.
 	 */
 	
-	public void sortByFirstName() {
-		// for teachers
-		// sorts students by their first name
+	public ArrayList<Student> sortByFirstName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
 		
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getFirstName().compareToIgnoreCase(s2.getFirstName());
+	        }
+	    });
+		
+	    return students;
 	}
 	
-	public void sortByLastName() {
-		// for teachers
-		// sorts students by their last name
-				
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+	public ArrayList<Student> sortByLastName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
+		
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getLastName().compareToIgnoreCase(s2.getLastName());
+	        }
+	    });
+		
+		return students;
 	}
 	
-	public void sortByUserName() {
-		// for teachers
-		// sorts students by their username
-				
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+	public ArrayList<Student> sortByUserName(String courseName) {
+		Course course = fullCourseMap.get(courseName);
+		if(course == null) {
+			return null;
+		}
+		
+		ArrayList<Student> students = course.getStudentMap();
+		Collections.sort(students, new Comparator<Student>() {
+	        @Override
+	        public int compare(Student s1, Student s2) {
+	            return s1.getUsername().compareToIgnoreCase(s2.getUsername());
+	        }
+	    });
+		
+		return students;
 	}
 	
 	public void sortByGrades() {
@@ -197,13 +224,21 @@ public class Model {
 		// assignment, course should come as a parameter (ig)
 	}
 	
-	public void putInGroups() {
+	public HashMap<String, ArrayList<String>> putInGroups(String courseName, int num) {
 		// for teachers
 		// creates groups and puts students into them.
 		// return HashMap<String, ArrayList<Student>> String is group name.
-				
-		// i dont know if this method should return something.
-		// course should come as a parameter (ig)
+		ArrayList<Student> studentMap = fullCourseMap.get(courseName).getStudentMap();	
+	    HashMap<String, ArrayList<String>> groupMap = new HashMap<>();
+	    for (int i = 0; i < num; i++) {
+	        groupMap.put("Group " + (i + 1), new ArrayList<>());
+	    }
+	    for (int i = 0; i < studentMap.size(); i++) {
+	        Student student = studentMap.get(i);
+	        String groupName = "Group " + ((i % num) + 1);
+	        groupMap.get(groupName).add(student.getFirstName() + " " + student.getLastName() + " " + student.getUsername());
+	    }
+	    return groupMap;
 	}
 	
 	public void assignFinalGrade() {
@@ -213,14 +248,38 @@ public class Model {
 		// course should come as a parameter (ig)
 	}
 	
-	public void calculateClassAverage(int option) { 
+	public void calculateClassAverage(int option, String courseName) { 
 		// for teachers
-		//Option 1: Final Grade = Total Points Earned/Total Points Possible. Basically, all
-		//the points from all the assignments are added up. (This is how I do it in CSc 335.)
+		
 		//Option 2: The final grade is based on categories and percentages.
 		
 		// course should come as a parameter (ig)
-		
+		HashMap<String, Assignment> assignmentMap = fullCourseMap.get(courseName).getAssignmentsMap();
+		if(option == 1) {
+			//Option 1: Final Grade = Total Points Earned/Total Points Possible. Basically, all
+			//the points from all the assignments are added up. (This is how I do it in CSc 335.)
+			int[] typeCount = {0, 0, 0, 0, 0};
+			for( Assignment assignment: assignmentMap.values()) {
+				int type = assignment.getType().ordinal();
+				typeCount[type] ++;
+			}
+			int[] maxGrades = {150, 200, 0, 0, 0};
+			if(typeCount[2] != 0) {
+				maxGrades[2] = 200 / typeCount[2];
+			}
+			if(typeCount[3] != 0) {
+				maxGrades[3] = 100 / typeCount[3];
+			}
+			if(typeCount[4] != 0) {
+				maxGrades[4] = 200 / typeCount[4];
+			}
+			for( Assignment assignment: assignmentMap.values()) {
+				int type = assignment.getType().ordinal();
+				assignment.setMaxGrade(maxGrades[type]);
+			}
+		} else {
+			
+		}	
 	}
 	
 	public void setUpCategories() {
@@ -273,7 +332,39 @@ public class Model {
 		}
 		return ("Student(s) added!");
 	}
-
-
-
+	
+	// This function should be called on just about everything.
+	// courseName should be "" if it does not relate to a specific course.
+	// premissionreq works like this: 0 = student, 1 = teacher, 2 = both. It will validate they meet this number.
+	private boolean validateAccess(String courseName, int premissionReq) {
+		if (!(courseName.equals(""))) {
+			if (personUsing instanceof Teacher) {
+				// Note this is a not
+				if (!(fullCourseMap.get(courseName).getTeacher().equals(personUsing))) return false;
+			} else {
+				// Also a not
+				if (!(fullCourseMap.get(courseName).isEnrolled((Student) personUsing))) return false;
+			}
+		}
+		if (personUsing instanceof Teacher && premissionReq < 1) return false;
+		if (personUsing instanceof Student && premissionReq == 1) return false;
+		return true;
+	}
+	
+	public String getCurrentUsersName() {
+		return personUsing.getUsername();
+	}
+	
+	public boolean canCreateGroups(String courseName, int num) {
+		System.out.println("a:" + fullCourseMap.get(courseName));
+		if(num <= fullCourseMap.get(courseName).getStudentMap().size()) {
+			return true;
+		}
+		return false;
+	}
+	
+	// This method was actually abandoned, but I imagine it might be used later.
+	public boolean getIsTeacher() {
+		return (personUsing instanceof Teacher);
+	}
 }

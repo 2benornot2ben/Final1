@@ -15,6 +15,7 @@ public class Course {
 	private HashMap<String, ArrayList<Student>> groupList; // String is "group name"
 	
 	public Course(String courseName) {
+		this.completed = false;
 		this.courseName = courseName;
 		assignmentMap = new HashMap<String, Assignment>();
 		studentMap = new HashMap<String, Student>();
@@ -25,6 +26,7 @@ public class Course {
 	// This is meant to be used for IMPORTING.
 	protected Course(String courseName, HashMap<String, Assignment> assignmentMap,
 			HashMap<String, Student> studentMap, HashMap<String, ArrayList<Student>> groupMap) {
+		this.completed = false; // May be changed later
 		this.courseName = courseName;
 		this.assignmentMap = assignmentMap; // escaping reference; will handle it later when we actually use it.
 		this.studentMap = studentMap; // escaping reference; will handle it later when we actually use it.
@@ -100,6 +102,26 @@ public class Course {
 		return totalAvg / studentMap.size();
 	}
 	
+	protected HashMap<String, Assignment> getAssignmentsMap(){
+		return new HashMap<String, Assignment>(this.assignmentMap);
+	}
+  
+  /*
+	 * UPDATE: Behruz
+	 * -  created to return student objects from studentMap
+	 * to use them for sorting in Model.java
+	 * */
+	
+	protected ArrayList<Student> getStudentMap(){
+		System.out.println("aa"+studentMap);
+		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
+		for(Student student : studentMap.values()) {
+			copyStudentMap.add(student);
+		}
+		
+		return copyStudentMap;
+	}
+	
 	protected boolean addStudent(Student student) {
 		String stuUser = student.getUsername();
 		if (studentMap.containsKey(stuUser)) return false;
@@ -117,9 +139,16 @@ public class Course {
 	protected Iterator<Student> getEnrolledStudents() {
 		return studentMap.values().iterator();
 	}
+	
+	protected Teacher getTeacher() {
+		return teacher;
+	}
+	
+	public boolean isEnrolled(Student student) {
+		return studentMap.containsKey(student.getUsername());
+	}
 
 	// public double getStudentAverage(String studentUsername) {
 	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
 	// }
-
 }
