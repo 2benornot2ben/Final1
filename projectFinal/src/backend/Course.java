@@ -101,6 +101,10 @@ public class Course {
 		}
 		return totalAvg / studentMap.size();
 	}
+	
+	protected HashMap<String, Assignment> getAssignmentsMap(){
+		return new HashMap<String, Assignment>(this.assignmentMap);
+	}
   
   /*
 	 * UPDATE: Behruz
@@ -108,7 +112,8 @@ public class Course {
 	 * to use them for sorting in Model.java
 	 * */
 	
-	public ArrayList<Student> getStudentMap(){
+	protected ArrayList<Student> getStudentMap(){
+		System.out.println("aa"+studentMap);
 		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
 		for(Student student : studentMap.values()) {
 			copyStudentMap.add(student);
