@@ -1,0 +1,8 @@
+CSC345,jjohnson
+Marci,Rodriguez,mrodriguez
+Timur,Nguyen,tnguyen
+Anita,Kim,akim
+Lebron,Wilson,lwilson
+Fatih,Bozdogan,fbozdogan
+Cristiano,Ronaldo,cr7
+Abdukodir,Khusanov, akhusanov45
