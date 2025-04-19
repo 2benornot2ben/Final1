@@ -3,10 +3,10 @@ package backend;
 import java.util.HashMap;
 
 public class Assignment {
-	private HashMap<String, Integer> idToGrade; // First string is username, second is grade
-	private int maxGrade; // Note that going over is like a bonus grade.
-	private boolean graded; // If ALL is graded
-	private String assignmentName;
+	protected HashMap<String, Integer> idToGrade; // First string is username, second is grade
+	protected int maxGrade; // Note that going over is like a bonus grade.
+	protected boolean graded; // If ALL is graded
+	protected String assignmentName;
 	// We need a way to distinguish between 0 (you got a 0) and 0 (it's not graded for you yet) for each student.
 	// Perhaps a secondary hashmap which uses the same int studentId, but holds a bool?
 	// Decide Later
@@ -14,6 +14,7 @@ public class Assignment {
 		this.assignmentName = assignmentName;
 		this.maxGrade = maxGrade;
 		idToGrade = new HashMap<String, Integer>();
+		graded = false;
 	}
 	
 	// This is meant for IMPORTING

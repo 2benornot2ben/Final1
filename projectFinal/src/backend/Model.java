@@ -7,16 +7,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.io.File;
 import java.io.IOException;
 
 public class Model {
 
 	// this represesnts all the courses.
-	private HashMap<String, Course> fullCourseMap;	// str is the course name.
-	private HashMap<String, Student> studentMap; // str is the username
-	private HashMap<String, Teacher> teacherMap; // str is the username
-	private User personUsing;
+	protected HashMap<String, Course> fullCourseMap;	// str is the course name.
+	protected HashMap<String, Student> studentMap; // str is the username
+	protected HashMap<String, Teacher> teacherMap; // str is the username
+	protected User personUsing;
 	
 	
 	// definetely needs a parameter but i dont know yet.
@@ -319,12 +324,40 @@ public class Model {
 		return true;
 	}
 	
+	@JsonIgnore
 	public String getCurrentUsersName() {
+		//for (Course i: fullCourseMap.values()) { System.out.println(i.courseName); }
+		for (String i: personUsing.getCurCourses()) { System.out.println(i); }
 		return personUsing.getUsername();
 	}
 	
 	// This method was actually abandoned, but I imagine it might be used later.
+	@JsonIgnore
 	public boolean getIsTeacher() {
 		return (personUsing instanceof Teacher);
+	}
+	
+	// JSON METHODS
+	// As in, we don't use these, but the json needs them to exist...
+	private Model() {};
+	
+	@JsonSetter
+	private void setFullCourseMap(HashMap<String, Course> fullCourseMap ) {
+		this.fullCourseMap = fullCourseMap;
+	}
+	
+	@JsonSetter
+	private void setStudentMap(HashMap<String, Student> studentMap) {
+		this.studentMap = studentMap;
+	}
+	
+	@JsonSetter
+	private void setTeacherMap(HashMap<String, Teacher> teacherMap) {
+		this.teacherMap = teacherMap;
+	}
+	
+	@JsonSetter
+	private void setPersonUsing(User personUsing) {
+		this.personUsing = personUsing;
 	}
 }

@@ -8,12 +8,12 @@ import java.util.Scanner;
 
 
 public class Database {
-	private HashMap<String, User> accountList; 
-	private HashMap<String, Assignment> assignmentMap;
-	private HashMap<String, Student> studentMap;
-	private HashMap<String, Teacher> teacherMap;
-	private HashMap<String, Course> courseMap;
-	private ArrayList<String> fileNames;
+	protected HashMap<String, User> accountList; 
+	protected HashMap<String, Assignment> assignmentMap;
+	protected HashMap<String, Student> studentMap;
+	protected HashMap<String, Teacher> teacherMap;
+	protected HashMap<String, Course> courseMap;
+	protected ArrayList<String> fileNames;
 	
 	public Database(AccountStorage storage) throws FileNotFoundException {
 		accountList = new HashMap<String, User>();
@@ -28,6 +28,8 @@ public class Database {
 		readCourses();
 		storage.setAccountList(accountList);
 	}
+	
+	
 	
 	// How is this ok.
 	public HashMap<String, Course> getCourseMap() {

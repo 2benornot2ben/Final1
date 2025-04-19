@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class Course {
-	private HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
-	private String courseName;
+	protected HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
+	protected String courseName;
 	
-	private Teacher teacher; // Comment: Should each course have a teacher?
-	private HashMap<String, Student> studentMap; // The string is the username
-	private Boolean completed;
-	private HashMap<String, ArrayList<Student>> groupList; // String is "group name"
+	protected Teacher teacher; // Comment: Should each course have a teacher?
+	protected HashMap<String, Student> studentMap; // The string is the username
+	protected Boolean completed;
+	protected HashMap<String, ArrayList<Student>> groupList; // String is "group name"
 	
 	public Course(String courseName) {
 		this.completed = false;
@@ -94,6 +98,7 @@ public class Course {
 		return ungradedAssignments;
 	}
 
+	@JsonIgnore
 	public double getCourseAverage() {
 		double totalAvg = 0;
 		for (String key : studentMap.keySet()) {
@@ -146,4 +151,29 @@ public class Course {
 	// public double getStudentAverage(String studentUsername) {
 	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
 	// }
+	
+	// JSON METHODS
+	// As in, we don't use these, but the json needs them to exist...
+	private Course() {};
+	
+	@JsonSetter
+	private void setAssignmentMap(HashMap<String, Assignment> assignmentMap) {
+		this.assignmentMap = assignmentMap;
+	}
+	
+	@JsonSetter
+	private void setStudentMap(Student[] studentMap ) {
+		HashMap<String, Student> makeHashMap = new HashMap<String, Student>(studentMap.length);
+		for (Student i : studentMap) {
+			makeHashMap.put(i.getUsername(), i);
+			if (i.courseMap == null) i.courseMap = new HashMap<String, Course>();
+			if (!(i.courseMap.containsKey(courseName))) i.addCourse(this);
+		}
+		this.studentMap = makeHashMap;
+	}
+	
+	@JsonSetter
+	private void setGroupList(HashMap<String, ArrayList<Student>> groupList) {
+		this.groupList = groupList;
+	}
 }

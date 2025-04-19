@@ -2,6 +2,9 @@ package backend;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class Student extends User {
 	private String firstName;
 	private String lastName;
@@ -11,13 +14,13 @@ public class Student extends User {
 
 	// if a letter grade is not assigned, it should be a cur course
 	// if a letter grade is assigned, it should be a past course
-
-
 	
 	public Student(String first, String last, String user) {
 		super(user);
 		this.firstName = first;
 		this.lastName = last;
+		this.studentAverageGrades = new HashMap<String, Double>();
+		this.studentGradeLetters = new HashMap<String, Grades>();
 	}
 	
 	// This is meant for IMPORTING
@@ -54,6 +57,7 @@ public class Student extends User {
 		return totalPointsEarned / totalPointsPossible;
 	}
 
+	@JsonIgnore
 	public double getCourseAverage(String courseName) {
 		return courseMap.get(courseName).getCourseAverage();
 	}
@@ -66,11 +70,27 @@ public class Student extends User {
 		return totalAvg / studentAverageGrades.size();
 	}
 
+	@JsonIgnore
 	public double getStudentAverage(String courseName) {
 		return studentAverageGrades.get(courseName);
 	}
 	
+	@JsonIgnore
 	public String getPrintFormatted() {
 		return firstName + " " + lastName + " (" + username + ")";
 	}
+	
+	// JSON METHODS
+		// As in, we don't use these, but the json needs them to exist...
+		private Student() {};
+		
+		@JsonSetter
+		private void setStudentAverageGrades(HashMap<String, Double> studentAverageGrades ) {
+			this.studentAverageGrades = studentAverageGrades;
+		}
+		
+		@JsonSetter
+		private void setStudentGradeLetters(HashMap<String, Grades> studentGradeLetters) {
+			this.studentGradeLetters = studentGradeLetters;
+		}
 }

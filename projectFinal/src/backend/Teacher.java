@@ -1,8 +1,11 @@
 package backend;
 
+import java.beans.Transient;
 import java.util.HashMap;
 
 public class Teacher extends User {
+	public Teacher() {};
+	
 	public Teacher(String user) {
 		super(user);
 	}

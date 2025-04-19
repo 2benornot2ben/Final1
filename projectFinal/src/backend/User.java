@@ -4,8 +4,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+//import backend.Student.Grades;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Student.class, name = "student"),
+        @JsonSubTypes.Type(value = Teacher.class, name = "teacher")
+})
 public class User { // User is both student & teacher - use this for methods used by both.
 	protected String username;
+	
+	@JsonBackReference
 	protected HashMap<String, Course> courseMap; // String is course name, of course.
 	
 	public User(String username) {
@@ -71,4 +86,6 @@ public class User { // User is both student & teacher - use this for methods use
 		User other = (User) obj;
 		return Objects.equals(username, other.username);
 	}
+	
+	protected User() {courseMap = new HashMap<String, Course>();};
 }
