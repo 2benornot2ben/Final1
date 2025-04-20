@@ -11,4 +11,8 @@ public class Teacher extends User {
 	protected Teacher(String user, HashMap<String, Course> courseList) {
 		super(user, courseList);
 	}
+	
+	// JSON METHODS
+	// As in, we don't use these, but the json needs them to exist...
+	protected Teacher() {};
 }

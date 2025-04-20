@@ -1,8 +1,14 @@
 package frontend;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.*;
 
@@ -14,8 +20,38 @@ public class Main {
 		 * knowing where to ask about logging in. */
 		
 		Scanner getInput = new Scanner(System.in);
-		AccountStorage storage = new AccountStorage();
-		Database database = new Database(storage);
+		//AccountStorage storage = new AccountStorage();
+		//Database database = new Database(storage);
+		String bleh;
+		AccountStorage storage;
+		Database database;
+		System.out.println("Load from json? (y/n)");
+		if (getInput.nextLine().toLowerCase().equals("y")) {
+			try {
+				bleh = Files.readString(Paths.get("savedata.json"));
+				System.out.println(bleh);
+				//sInputStream inJson = Database.class.getResourceAsStream(bleh);
+				//InputStream inJsonStorage = AccountStorage.class.getResourceAsStream(bleh);
+				File file = new File("yourfileName");
+				System.out.println(file.getAbsolutePath());
+				database = new ObjectMapper().readValue(bleh, Database.class);
+				storage = new AccountStorage();
+				database.updateUnpacking(storage);
+				//storage = new ObjectMapper().readValue(bleh, AccountStorage.class);
+				//database = new ObjectMapper().readValue(bleh, Database.class);
+				//database = new Database(storage);
+				System.out.println("Successfully loaded.");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Error!");
+				storage = new AccountStorage();
+				database = new Database(storage);
+			}
+		} else {
+			System.out.println("Loading from txt...");
+			storage = new AccountStorage();
+			database = new Database(storage);
+		}
 		boolean running = true;
 		while(running) {
 			System.out.println("Who are you?");
@@ -79,6 +115,8 @@ public class Main {
 				// can avoid a resource leak!
 				running = false;
 				getInput.close();
+				database.updateForPacking(storage);
+				database.JsonConversion();
 			} else {
 				System.out.println("Invalid input.");
 			}
