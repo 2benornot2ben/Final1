@@ -1,12 +1,28 @@
 package backend;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Student.class, name = "student"),
+        @JsonSubTypes.Type(value = Teacher.class, name = "teacher")
+})
 public class User { // User is both student & teacher - use this for methods used by both.
 	protected String username;
+	@JsonIgnore
 	protected HashMap<String, Course> courseMap; // String is course name, of course.
+	
+	// This is for the json to use.
+	private ArrayList<String> courseNames; // Names of the courses
 	
 	public User(String username) {
 		this.username = username;
@@ -70,5 +86,29 @@ public class User { // User is both student & teacher - use this for methods use
 			return false;
 		User other = (User) obj;
 		return Objects.equals(username, other.username);
+	}
+	
+	// JSON RELATED METHODS
+	// As in, if you're using it for anything other than that, hell are you doing?
+	
+	protected void packUpReferences() {
+		courseNames = new ArrayList<>(courseMap.keySet());
+	}
+	
+	protected void unPackReferences(HashMap<String, Course> courseMap) {
+		//courseMap = new HashMap<String, Course>();
+		for (String i : courseNames) {
+			this.courseMap.put(i, courseMap.get(i));
+		}
+	}
+	
+	// JSON METHODS
+	// As in, we don't use these, but the json needs them to exist...
+	// The one below was to fix a bug which im unsure if still exists. Swap out if it does.
+	protected User() {courseMap = new HashMap<String, Course>();};
+	
+	@JsonSetter
+	protected void setCourseNames(ArrayList<String> courseNames) {
+		this.courseNames = courseNames;
 	}
 }
