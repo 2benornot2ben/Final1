@@ -1,5 +1,19 @@
 CSC345,jjohnson
-Marci,Rodriguez,mrodriguez
-Timur,Nguyen,tnguyen
-Anita,Kim,akim
-Lebron,Wilson,lwilson
+s,Marci,Rodriguez,mrodriguez
+s,Timur,Nguyen,tnguyen
+s,Anita,Kim,akim
+s,Lebron,Wilson,lwilson
+a,Midterm1,MIDTERM
+a,Midterm2,MIDTERM
+a,Final,FINAL
+a,Quiz1,QUIZ
+a,Quiz2,QUIZ
+a,Quiz3,QUIZ
+a,Quiz4,QUIZ
+a,Hw1,HW
+a,Hw2,HW
+a,Hw3,HW
+a,Hw4,HW
+a,Hw5,HW
+a,Programming project 1,PROJECT
+a,Programming project 2,PROJECT
