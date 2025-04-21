@@ -48,20 +48,20 @@ public class Model {
 		return student.calculateGPA();
 	}
 
-	public HashSet<String> getCurCoursesStudent(String studentUsername) {
+	public ArrayList<String> getCurCoursesStudent(String studentUsername) {
 		return studentMap.get(studentUsername).getCurCourses();
 	}
 
-	public HashSet<String> getCompletedCoursesStudent(String studentUsername) {
+	public ArrayList<String> getCompletedCoursesStudent(String studentUsername) {
 		return studentMap.get(studentUsername).getCompletedCourses();
 	}
 
 	// TEACHER METHODS
-	public HashSet<String> getCurCoursesTeacher(String teacherUsername) {
+	public ArrayList<String> getCurCoursesTeacher(String teacherUsername) {
 		return teacherMap.get(teacherUsername).getCurCourses();
 	}
 
-	public HashSet<String> getCompletedCoursesTeacher(String teacherUsername) {
+	public ArrayList<String> getCompletedCoursesTeacher(String teacherUsername) {
 		return teacherMap.get(teacherUsername).getCompletedCourses();
 	}
 
@@ -73,14 +73,12 @@ public class Model {
 	 *  I did not include parameters because i not sure what will they be, but i included my guesses. 
 	 */
 
-	public void addAssignment() {
-		// for teachers
-		// adds an assignment to a course
-		
-		// assignment, course should come as a parameter (ig)
+	public void addAssignment(String courseName, String assignmentName, String assignmentCategory) {
+		fullCourseMap.get(courseName).addAssignment(assignmentName, assignmentCategory);
 	}
 	
-	public void removeAssignment() {
+	public void removeAssignment(String courseName, String assignmentName, String assignmentCategory) {
+		fullCourseMap.get(courseName).removeAssignment(assignmentName, assignmentCategory);
 		// for teachers
 		// removes an assignment from a course
 		
@@ -225,9 +223,6 @@ public class Model {
 	}
 	
 	public HashMap<String, ArrayList<String>> putInGroups(String courseName, int num) {
-		// for teachers
-		// creates groups and puts students into them.
-		// return HashMap<String, ArrayList<Student>> String is group name.
 		ArrayList<Student> studentMap = fullCourseMap.get(courseName).getStudentMap();	
 	    HashMap<String, ArrayList<String>> groupMap = new HashMap<>();
 	    for (int i = 0; i < num; i++) {
@@ -241,16 +236,26 @@ public class Model {
 	    return groupMap;
 	}
 	
-	public void assignFinalGrade() {
-		// for teachers
-		// calculates a Final Grade
-		
-		// course should come as a parameter (ig)
+	public void assignFinalGrade(String courseName, int mode, ArrayList<Double> weights, ArrayList<Integer> drops) {
+		Course course = fullCourseMap.get(courseName);
+		HashMap<String, FinalGrade> finalGrades = new HashMap<String, FinalGrade>();
+		HashMap<String, Assignment> assignmentMap = course.getAssignmentsMap();
+		HashMap<String, Double> tempGrades = new HashMap<String, Double>();
+		if(mode == 1) {
+			for( Assignment assignment: assignmentMap.values()) {
+				for(String j : assignment.getIdToGrade().keySet()) {
+					if(!tempGrades.containsKey(j)) {
+						tempGrades.put(j, assignment.getIdToGrade().get(j));
+					} else {
+						tempGrades.put(j, tempGrades.get(j) + assignment.getIdToGrade().get(j));
+					}
+				}
+			}
+			System.out.println(tempGrades);
+		}
 	}
 	
 	public void calculateClassAverage(int option, String courseName) { 
-		// for teachers
-		
 		//Option 2: The final grade is based on categories and percentages.
 		
 		// course should come as a parameter (ig)
@@ -263,7 +268,7 @@ public class Model {
 				int type = assignment.getType().ordinal();
 				typeCount[type] ++;
 			}
-			int[] maxGrades = {150, 200, 0, 0, 0};
+			double[] maxGrades = {150, 200, 0, 0, 0};
 			if(typeCount[2] != 0) {
 				maxGrades[2] = 200 / typeCount[2];
 			}
@@ -277,19 +282,19 @@ public class Model {
 				int type = assignment.getType().ordinal();
 				assignment.setMaxGrade(maxGrades[type]);
 			}
+			fullCourseMap.get(courseName).setTotalGrade(maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
 		} else {
-			
-		}	
+			for( Assignment assignment: assignmentMap.values()) {
+				assignment.setMaxGrade(100);
+			}
+		}
 	}
 	
-	public void setUpCategories() {
-		// for teachers
-		// In a course that uses categories, there should be the option to “drop” a certain number of
-		// assignments with the lowest grade and to assign weights to the different categories.
-		
-		// course should come as a parameter (ig)
-		
-		// Is this necessary? - Ben
+	public boolean canAssignFinalGrades(String courseName) {
+		if(this.getUngradedAssignments(courseName).size() > 0) {
+			return false;
+		}
+		return true;
 	}
 	
 	public void createCourses(String filename) {
@@ -366,5 +371,9 @@ public class Model {
 	// This method was actually abandoned, but I imagine it might be used later.
 	public boolean getIsTeacher() {
 		return (personUsing instanceof Teacher);
+	}
+	
+	public void getCategories(String courseName, String assignmentName, String category) {
+		fullCourseMap.get(courseName).addAssignment(assignmentName, category);
 	}
 }
