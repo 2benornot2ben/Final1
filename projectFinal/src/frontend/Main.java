@@ -25,7 +25,7 @@ public class Main {
 			System.out.print("Enter an option you want: ");
 			String option = getInput.nextLine();
 			if(option.split(" ")[0].equals("1")) {
-				System.out.println("You are about to log into your student account");
+				System.out.println("\nYou are about to log into your student account");
 				System.out.print("Enter a username: ");
 				String username = getInput.nextLine();
 				if(storage.userExist(username, "student")) {
@@ -34,13 +34,13 @@ public class Main {
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
 						storage.setAccount(username, password, database, false);
-						System.out.println("Logging in to your account.");
+						System.out.println("\nLogging in to your account.");
 						storage.openModel(username, password, "student");	
 					} else {
 						System.out.print("Enter your password: ");
 						String password = getInput.nextLine();
 						if(storage.canLogIn(username, password)) {
-							System.out.println("Logging in to your account.");
+							System.out.println("\nLogging in to your account.");
 							storage.openModel(username, password, "student");
 						} else {
 							System.out.println("The username/password is incorrect");
@@ -50,7 +50,7 @@ public class Main {
 					System.out.println("The username/password is incorrect");
 				}
 			} else if (option.split(" ")[0].equals("2")) {
-				System.out.println("You are about to log into your teacher account");
+				System.out.println("\nYou are about to log into your teacher account");
 				System.out.print("Enter a username: ");
 				String username = getInput.nextLine();
 				if(storage.userExist(username, "teacher")) {
@@ -59,13 +59,13 @@ public class Main {
 						// need a password validation: length > 8, use of capital and small letters, use of special characters
 						String password = getInput.nextLine();
 						storage.setAccount(username, password, database, true);
-						System.out.println("Logging in to your account.");
+						System.out.println("\nLogging in to your account.");
 						storage.openModel(username, password, "teacher");	
 					} else {
 						System.out.print("Enter your password: ");
 						String password = getInput.nextLine();
 						if(storage.canLogIn(username, password)) {
-							System.out.println("Logging in to your account.");
+							System.out.println("\nLogging in to your account.");
 							storage.openModel(username, password, "teacher");
 						} else {
 							System.out.println("The username/password is incorrect");
