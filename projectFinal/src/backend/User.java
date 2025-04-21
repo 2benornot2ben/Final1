@@ -39,8 +39,8 @@ public class User { // User is both student & teacher - use this for methods use
 		// to an arraylist and then just passing that. (No, just using arraylists isn't any faster)
 	}
 	
-	protected HashSet<String> getCurCourses(){
-		HashSet<String> curCourses = new HashSet<String>();
+	protected ArrayList<String> getCurCourses(){
+		ArrayList<String> curCourses = new ArrayList<String>();
 		for (String key : courseMap.keySet()) {
 			if (!courseMap.get(key).isCompleted()) {
 				curCourses.add(key);
@@ -48,8 +48,8 @@ public class User { // User is both student & teacher - use this for methods use
 		}
 		return curCourses;
 	}
-	protected HashSet<String> getCompletedCourses(){
-		HashSet<String> completedCourses = new HashSet<String>();
+	protected ArrayList<String> getCompletedCourses(){
+		ArrayList<String> completedCourses = new ArrayList<String>();
 		for (String key : courseMap.keySet()) {
 			if (courseMap.get(key).isCompleted()) {
 				completedCourses.add(key);
@@ -104,11 +104,11 @@ public class User { // User is both student & teacher - use this for methods use
 	
 	// JSON METHODS
 	// As in, we don't use these, but the json needs them to exist...
-	// The one below was to fix a bug which im unsure if still exists. Swap out if it does.
+	// This one, specifically, needs to be protected. Why? That's... Actually a good question, but it does.
 	protected User() {courseMap = new HashMap<String, Course>();};
 	
 	@JsonSetter
-	protected void setCourseNames(ArrayList<String> courseNames) {
+	private void setCourseNames(ArrayList<String> courseNames) {
 		this.courseNames = courseNames;
 	}
 }

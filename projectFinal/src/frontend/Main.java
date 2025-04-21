@@ -29,17 +29,9 @@ public class Main {
 		if (getInput.nextLine().toLowerCase().equals("y")) {
 			try {
 				bleh = Files.readString(Paths.get("savedata.json"));
-				System.out.println(bleh);
-				//sInputStream inJson = Database.class.getResourceAsStream(bleh);
-				//InputStream inJsonStorage = AccountStorage.class.getResourceAsStream(bleh);
-				File file = new File("yourfileName");
-				System.out.println(file.getAbsolutePath());
 				database = new ObjectMapper().readValue(bleh, Database.class);
 				storage = new AccountStorage();
 				database.updateUnpacking(storage);
-				//storage = new ObjectMapper().readValue(bleh, AccountStorage.class);
-				//database = new ObjectMapper().readValue(bleh, Database.class);
-				//database = new Database(storage);
 				System.out.println("Successfully loaded.");
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -117,6 +109,7 @@ public class Main {
 				getInput.close();
 				database.updateForPacking(storage);
 				database.JsonConversion();
+				System.out.println("Converted to json!");
 			} else {
 				System.out.println("Invalid input.");
 			}
