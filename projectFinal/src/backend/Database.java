@@ -77,6 +77,7 @@ public class Database {
 	}
 	private void readCourses() throws FileNotFoundException {
 		HashMap<String, Student> tempStudentMap = new HashMap<String, Student>();
+		HashMap<String, Assignment> tempAssignmentMap = new HashMap<String, Assignment>();
 		for(int i=0; i<fileNames.size(); i++) {
 			File myFile = new File(fileNames.get(i));
 			Scanner myReader = new Scanner(myFile);
@@ -86,19 +87,32 @@ public class Database {
 			String teacherName = headerInfo[1];
 			
 			while(myReader.hasNextLine()){
-				String studentLine = myReader.nextLine();
-				String studentInfo[] = studentLine.split(",");
-				String name = studentInfo[0];
-				String last = studentInfo[1];
-				String username = studentInfo[2];
-				tempStudentMap.put(username, studentMap.get(username));	
+				String line = myReader.nextLine();
+				if(line.split(",")[0].equals("s")) {
+					String studentInfo[] = line.split(",");
+					String name = studentInfo[1];
+					String last = studentInfo[2];
+					String username = studentInfo[3];
+					tempStudentMap.put(username, studentMap.get(username));
+				} else {
+					String assignmentInfo[] = line.strip().split(",");
+					String name = assignmentInfo[1];
+					String type = assignmentInfo[2];
+					tempAssignmentMap.put(name, new Assignment(name, convertToEnums(type)));
+				}
+					
 			}
 			Course course = new Course(courseName);
 			course.setTeacher(teacherMap.get(teacherName));
 			// there might be an error.
+			course.setAssignmentMap(tempAssignmentMap);
+			// there might be an error.
 			course.setStudentMap(tempStudentMap);
+						
 			for (Student j : tempStudentMap.values()) {
-				j.addCourse(course);
+				if (j != null) {
+					j.addCourse(course);
+				}
 			}
 			teacherMap.get(teacherName).addCourse(course);
 			//assignment also should be here
@@ -132,6 +146,23 @@ public class Database {
 			studentMap.put(username, holdStu);
 			accountList.put(username, holdStu);
 		}
+	}
+	
+	private AssignmentType convertToEnums(String category) {
+        switch (category) {
+	        case "MIDTERM":
+	            return AssignmentType.MIDTERM;
+	        case "FINAL":
+	            return AssignmentType.FINAL;
+	        case "QUIZ":
+	            return AssignmentType.QUIZ;
+	        case "HW":
+	            return AssignmentType.HW;
+	        case "PROJECT":
+	            return AssignmentType.PROJECT;
+	        default:
+	            throw new IllegalArgumentException("Unknown assignment type: " + category);
+        }
 	}
 	
 	public void updateForPacking(AccountStorage storage) {
@@ -190,8 +221,6 @@ public class Database {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             bufferedWriter.write(json);
             bufferedWriter.close();
-
-            System.out.println("Done!"); // This is NOT allowed. Change later.
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

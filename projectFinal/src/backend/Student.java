@@ -80,6 +80,11 @@ public class Student extends User {
 		return firstName + " " + lastName + " (" + username + ")";
 	}
 	
+	@JsonIgnore
+	public String toString() {
+		return this.getPrintFormatted();
+	}
+	
 	// JSON METHODS
 	// As in, we don't use these, but the json needs them to exist...
 	private Student() {};

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -19,6 +20,9 @@ public class Course {
 	private Boolean completed;
 	@JsonIgnore
 	private HashMap<String, ArrayList<Student>> groupList; // String is "group name"
+	private HashMap<String, FinalGrade> finalGrades;
+	private double totalGrade;
+	private HashMap<AssignmentType,Double> categories; // Assignment Type : Weight of that
 	
 	// This is for the json to use.
 	private String teacherPacked; // Teacher username
@@ -32,6 +36,12 @@ public class Course {
 		studentMap = new HashMap<String, Student>();
 		groupList = new HashMap<String, ArrayList<Student>>(); // This could be an arraylist if you think
 		// groups should be ordered by "number". We are contractually obligated to consider this.
+		categories = new HashMap<>();
+        categories.put(AssignmentType.MIDTERM, 300.0);
+        categories.put(AssignmentType.FINAL,   200.0);
+        categories.put(AssignmentType.QUIZ,    125.0);
+        categories.put(AssignmentType.HW,      125.0);
+        categories.put(AssignmentType.PROJECT, 250.0);
 	}
 	
 	// This is meant to be used for IMPORTING.
@@ -44,12 +54,24 @@ public class Course {
 		this.groupList = groupMap; // escaping reference; will handle it later when we actually use it.
 	}
 	
+	protected void setTotalGrade(double total) {
+		totalGrade = total;
+	}
+	
+	protected void setFinalGrades(HashMap<String, FinalGrade> finalGrades) {
+		this.finalGrades = finalGrades;
+	}
+	
 	public String getCourseName() {
 		return courseName;
 	}
 	
 	public void setStudentMap(HashMap<String, Student> studentMap) {
 		this.studentMap = studentMap;
+	}
+	
+	protected void setAssignmentMap(HashMap<String, Assignment> assignmentMap) {
+		this.assignmentMap = assignmentMap;
 	}
 	
 	public void setTeacher(Teacher teacher) {
@@ -104,6 +126,29 @@ public class Course {
 		}
 		return ungradedAssignments;
 	}
+	
+	public HashSet<String> getGradedAssignmentsUSER(String username) {
+		// go over the assignemtns and check if the assignment is graded
+		// if so add it to the hashset
+		// return the hashset
+		HashSet<String> gradedAssignments = new HashSet<String>();
+		for (String key : assignmentMap.keySet()) {
+			if ((assignmentMap.get(key).getStudentGradeExists(username))) {
+				gradedAssignments.add(key);
+			}
+		}
+		return gradedAssignments;
+	}
+	
+	public HashSet<String> getUngradedAssignmentsUSER(String username) {
+		HashSet<String> ungradedAssignments = new HashSet<String>();
+		for (String key : assignmentMap.keySet()) {
+			if (!(assignmentMap.get(key).getStudentGradeExists(username))) {
+				ungradedAssignments.add(key);
+			}
+		}
+		return ungradedAssignments;
+	}
 
 	@JsonIgnore
 	public double getCourseAverage() {
@@ -114,6 +159,7 @@ public class Course {
 		return totalAvg / studentMap.size();
 	}
 	
+	@JsonIgnore
 	protected HashMap<String, Assignment> getAssignmentsMap(){
 		return new HashMap<String, Assignment>(this.assignmentMap);
 	}
@@ -164,6 +210,33 @@ public class Course {
 	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
 	// }
 	
+	public void addAssignment(String assignmentName, String assignmentCategory) {
+		Assignment newAssignment = new Assignment(assignmentName,this.convertToEnums(assignmentCategory));
+		newAssignment.setType(this.convertToEnums(assignmentCategory));
+		assignmentMap.put(assignmentName, newAssignment);
+	}
+	
+	public void removeAssignment(String assignmentName, String assignmentCategory) {
+		assignmentMap.remove(assignmentName);
+	}
+	
+	private AssignmentType convertToEnums(String category) {
+        switch (category.toLowerCase()) {
+	        case "midterm":
+	            return AssignmentType.MIDTERM;
+	        case "final":
+	            return AssignmentType.FINAL;
+	        case "quiz":
+	            return AssignmentType.QUIZ;
+	        case "hw":
+	            return AssignmentType.HW;
+	        case "project":
+	            return AssignmentType.PROJECT;
+	        default:
+	            throw new IllegalArgumentException("Unknown assignment type: " + category);
+        }
+	}
+	
 	// JSON RELATED METHODS
 	// As in, if you're using it for anything other than that, hell are you doing?
 	
@@ -204,11 +277,7 @@ public class Course {
 	private Course() {
 		studentMap = new HashMap<String, Student>();
 		groupList = new HashMap<String, ArrayList<Student>>();
-	}
-	
-	@JsonSetter
-	private void setAssignmentMap(HashMap<String, Assignment> assignmentMap) {
-		this.assignmentMap = assignmentMap;
+		assignmentMap = new HashMap<String, Assignment>();
 	}
 	
 	// We can't fix them directly, so let's set up a fix.
@@ -227,4 +296,15 @@ public class Course {
 	private void setTeacherPacked(String teacherPacked) {
 		this.teacherPacked = teacherPacked;
 	}
+	
+	@JsonSetter
+	private void setCategories(HashMap<AssignmentType, Double> categories) {
+		this.categories = categories;
+	}
+	
+	@JsonGetter
+	private HashMap<String, Assignment> getAssignmentMap() {
+		return assignmentMap;
+	}
+	
 }
