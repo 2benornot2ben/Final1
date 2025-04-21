@@ -5,9 +5,11 @@ import java.util.HashMap;
 public class Student extends User {
 	private String firstName;
 	private String lastName;
-	private HashMap<String, Double> studentAverageGrades; // This should be all the current coureses
+	
+	// this is for the current courses
+	private HashMap<String, Double> studentAverageGrades; // String courseName : double avgGrade
 	private enum Grades {A, B, C, D, E, F};
-	private HashMap<String, Grades> studentGradeLetters; // This should be the past courses
+	private HashMap<String, Grades> studentGradeLetters; // String courseName : enum grade
 
 	// if a letter grade is not assigned, it should be a cur course
 	// if a letter grade is assigned, it should be a past course
@@ -72,5 +74,9 @@ public class Student extends User {
 	
 	public String getPrintFormatted() {
 		return firstName + " " + lastName + " (" + username + ")";
+	}
+	
+	public String toString() {
+		return this.getPrintFormatted();
 	}
 }
