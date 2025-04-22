@@ -1,3 +1,4 @@
+
 package backend;
 
 import java.io.File;
@@ -92,5 +93,25 @@ public class AccountStorage {
         catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+	}
+	
+	protected HashMap<String, User> packingAccountStorage() {
+		return accountList;
+	}
+	
+	protected HashMap<String, String> packingPrivateStorage() {
+		return privateData;
+	}
+	
+	// You might wanna use some flyweight something for this, but nrn, im dyin bro
+	protected void unpackingJson(HashMap<String, User> accountList, HashMap<String, String> privateData,
+			Database database) {
+		this.accountList = accountList;
+		this.privateData = privateData;
+		for (String names : privateData.keySet()) {
+			User holdUser = database.returnCorrectUser(names);
+			Model myModel = new Model(database, holdUser);
+			modelMap.put(names, myModel);
+		}
 	}
 }
