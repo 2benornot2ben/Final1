@@ -1,28 +1,17 @@
 
 package backend;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
 
-import frontend.*;
+import frontend.View;
 
 public class AccountStorage {
 	private HashMap<String, User> accountList; // The string is username.
 	private HashMap<String, String> privateData; // this will store username and password
 	private HashMap<String, Model> modelMap; // stores models of particular users
-	
-	// This is meant for IMPORTING
-	protected AccountStorage(HashMap<String, User> accountList) {
-		this.accountList = new HashMap<String, User>(accountList);
-	}
 	
 	public AccountStorage() {
 		/* Initializes a hashmap! Useful for going faster. */

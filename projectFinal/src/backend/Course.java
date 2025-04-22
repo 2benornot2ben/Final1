@@ -22,6 +22,9 @@ public class Course {
 	private HashMap<String, FinalGrade> finalGrades;
 	private double totalGrade;
 	private HashMap<AssignmentType,Double> categories; // Assignment Type : Weight of that
+	private int modeChosen = 0;
+	private ArrayList<Double> weights;
+	private ArrayList<Integer> drops;
 	
 	// This is for the json to use.
 	private String teacherPacked; // Teacher username
@@ -41,16 +44,6 @@ public class Course {
         categories.put(AssignmentType.QUIZ,    125.0);
         categories.put(AssignmentType.HW,      125.0);
         categories.put(AssignmentType.PROJECT, 250.0);
-	}
-	
-	// This is meant to be used for IMPORTING.
-	protected Course(String courseName, HashMap<String, Assignment> assignmentMap,
-			HashMap<String, Student> studentMap, HashMap<String, ArrayList<Student>> groupMap) {
-		this.completed = false; // May be changed later
-		this.courseName = courseName;
-		this.assignmentMap = assignmentMap; // escaping reference; will handle it later when we actually use it.
-		this.studentMap = studentMap; // escaping reference; will handle it later when we actually use it.
-		this.groupList = groupMap; // escaping reference; will handle it later when we actually use it.
 	}
 	
 	protected void setTotalGrade(double total) {
@@ -189,6 +182,25 @@ public class Course {
 		return copyStudentMap;
 	}
 	
+	public ArrayList<Double> getGradesForAssignment(String assignmentName) {
+        Assignment assignment = assignmentMap.get(assignmentName);
+        if (assignment == null) {
+            return new ArrayList<>();
+        }
+        return assignment.getAllGrades();
+    }
+	
+	public Double getStudentGrade(String username, String assignmentName) {
+        Assignment assignment = assignmentMap.get(assignmentName);
+        if (assignment == null) {
+            return null;
+        }
+        return assignment.getStudentGrade(username);
+    }
+	
+	
+	// END Behruz
+	
 	protected boolean addStudent(Student student) {
 		String stuUser = student.getUsername();
 		if (studentMap.containsKey(stuUser)) return false;
@@ -229,6 +241,22 @@ public class Course {
 		assignmentMap.remove(assignmentName);
 	}
 	
+	protected int getModeChosen() {
+		return modeChosen;
+	}
+	
+	protected void setModeChosen(int modeChosen) {
+		this.modeChosen = modeChosen;
+	}
+	
+	protected ArrayList<Double> getWeights() {
+		return weights;
+	}
+	
+	protected ArrayList<Integer> getDrops() {
+		return drops;
+	}
+	
 	private AssignmentType convertToEnums(String category) {
         switch (category.toLowerCase()) {
 	        case "midterm":
@@ -245,6 +273,9 @@ public class Course {
 	            throw new IllegalArgumentException("Unknown assignment type: " + category);
         }
 	}
+	
+	
+	
 	
 	// JSON RELATED METHODS
 	// As in, if you're using it for anything other than that, hell are you doing?
@@ -309,6 +340,16 @@ public class Course {
 	@JsonSetter
 	private void setCategories(HashMap<AssignmentType, Double> categories) {
 		this.categories = categories;
+	}
+	
+	@JsonSetter
+	private void setWeights(ArrayList<Double> weights) {
+		this.weights = weights;
+	}
+	
+	@JsonSetter
+	private void setDrops(ArrayList<Integer> drops) {
+		this.drops = drops;
 	}
 	
 	@JsonGetter

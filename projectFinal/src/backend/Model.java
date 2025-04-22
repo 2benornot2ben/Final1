@@ -26,7 +26,6 @@ public class Model {
 		teacherMap = database.getTeacherMap();
 		personUsing = person;
 	}
-	// We need the import version too but my brain kinda errored when I tried to make it - Ben
 	
 	// STUDENT METHODS 
 	public HashSet<String> getGradedAssignmentsUSER(String courseName, String studentUsername) {
@@ -171,14 +170,47 @@ public class Model {
 		return "Done!";
 	}
 	
-	public void calculateStats() {
-		// for teachers
-		// calculates the averages and the medians on assignment 
-		// returns a String message e.g. "Average on Project1 is 98% and median is 97%"
-		
-		// assignment, course should come as a parameter (ig)
-		
-	}
+	public String calculateStats(String courseName, String assignmentName) {
+ 		// for teachers
+ 		// calculates the averages and the medians on assignment 
+ 		// returns a String message e.g. "Average on Project1 is 98% and median is 97%"
+ 
+ 		// assignment, course should come as a parameter (ig)
+ 
+ 		Course course = fullCourseMap.get(courseName);
+         if (course == null) {
+             return "Course not found.";
+         }
+         Assignment assignment = course.getAssignmentsMap().get(assignmentName);
+         if (assignment == null) {
+             return "Assignment not found.";
+         }
+         ArrayList<Double> grades = course.getGradesForAssignment(assignmentName);
+         if (grades.isEmpty()) {
+             return "No grades available for " + assignmentName + ".";
+         }
+         
+         // Calculate average
+         double sum = 0;
+         for (Double grade : grades) {
+             sum += grade;
+         }
+         double average = (sum / grades.size()) / assignment.getMaxGrade() * 100;
+ 		
+         
+         // Calculate median
+         Collections.sort(grades);
+         double median;
+         int size = grades.size();
+         if (size % 2 == 0) {
+             median = (grades.get(size / 2 - 1) + grades.get(size / 2)) / 2.0;
+         } else {
+             median = grades.get(size / 2);
+         }
+         median = (median / assignment.getMaxGrade()) * 100;
+         
+         return String.format("Average on %s is %.2f%% and median is %.2f%%", assignmentName, average, median);
+ 	}
 	
 	public double calculateStudentCurAverage(String studentUsername) {
 		return studentMap.get(studentUsername).calculateCurAverage();
@@ -250,13 +282,44 @@ public class Model {
 		return students;
 	}
 	
-	public void sortByGrades() {
-		// for teachers
-		// sorts students by their grades on an assignment
-				
-		// i dont know if this method should return something.
-		// assignment, course should come as a parameter (ig)
-	}
+	public ArrayList<Student> sortByGrades(String courseName, String assignmentName) {
+ 		Course course = fullCourseMap.get(courseName);
+ 		if (course == null || course.getAssignmentsMap().get(assignmentName) == null) {
+             return null;
+         }
+ 		
+ 		ArrayList<Student> students = course.getStudentMap();
+         Collections.sort(students, new Comparator<Student>() {
+             @Override
+             public int compare(Student s1, Student s2) {
+                 Double grade1 = getStudentGrade(s1.getUsername(), courseName, assignmentName);
+                 Double grade2 = getStudentGrade(s2.getUsername(), courseName, assignmentName);
+                 if (grade1 == null && grade2 == null) {
+                     return 0;
+                 } else if (grade1 == null) {
+                     return 1; 
+                 } else if (grade2 == null) {
+                     return -1;
+                 }
+                 return Double.compare(grade2, grade1);
+             }
+         });
+         
+         return students;
+ 	}
+	
+	public Double getStudentGrade(String username, String courseName, String assignmentName) {
+        Course course = fullCourseMap.get(courseName);
+        if (course == null) {
+            return null;
+        }
+        Assignment assignment = course.getAssignmentsMap().get(assignmentName);
+        if (assignment == null) {
+            return null;
+        }
+        return assignment.getStudentGrade(username);
+    }
+	
 	
 	public HashMap<String, ArrayList<String>> putInGroups(String courseName, int num) {
 		// for teachers
@@ -275,12 +338,14 @@ public class Model {
 	    return groupMap;
 	}
 	
-	public void assignFinalGrade(String courseName, int mode, ArrayList<Double> weights, ArrayList<Integer> drops) {
+	public void assignFinalGrade(String courseName) {
 		Course course = fullCourseMap.get(courseName);
+		ArrayList<Double> weights = course.getWeights();
+		ArrayList<Integer> drops = course.getDrops();
 		HashMap<String, FinalGrade> finalGrades = new HashMap<String, FinalGrade>();
 		HashMap<String, Assignment> assignmentMap = course.getAssignmentsMap();
 		HashMap<String, Double> tempGrades = new HashMap<String, Double>();
-		if(mode == 1) {
+		if(course.getModeChosen() == 1) {
 			for( Assignment assignment: assignmentMap.values()) {
 				for(String j : assignment.getIdToGrade().keySet()) {
 					if(!tempGrades.containsKey(j)) {
@@ -299,7 +364,7 @@ public class Model {
 		}
 	}
 	
-	public void calculateClassAverage(int option, String courseName) {
+	public void calculateClassAverage(int option, String courseName, ArrayList<Double> weights, ArrayList<Integer> drops) {
 		HashMap<String, Assignment> assignmentMap = fullCourseMap.get(courseName).getAssignmentsMap();
 		if(option == 1) {
 			//Option 1: Final Grade = Total Points Earned/Total Points Possible. Basically, all
@@ -325,9 +390,12 @@ public class Model {
 			}
 			//more appropriate way needed.
 			fullCourseMap.get(courseName).setTotalGrade(2*maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
+			fullCourseMap.get(courseName).setModeChosen(1); // New line of code here.
 		} else {
 			for (Assignment assignment: assignmentMap.values()) {
 				assignment.setMaxGrade(100);
+				// What's this?
+				// We'll assume 0 is "not set up" btw.
 			}
 		}
 	}
@@ -430,5 +498,9 @@ public class Model {
 		} else {
 			return FinalGrade.E;
 		}
+	}
+	
+	public int isSetUp(String coursename) {
+		return (fullCourseMap.get(coursename).getModeChosen());
 	}
 }
