@@ -29,6 +29,7 @@ public class Main {
 		if (getInput.nextLine().toLowerCase().equals("y")) {
 			try {
 				bleh = Files.readString(Paths.get("savedata.json"));
+				System.out.println(bleh);
 				database = new ObjectMapper().readValue(bleh, Database.class);
 				storage = new AccountStorage();
 				database.updateUnpacking(storage);
