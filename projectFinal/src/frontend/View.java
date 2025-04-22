@@ -8,9 +8,6 @@ import java.util.Scanner;
 import backend.*;
 
 public class View {
-	private static boolean modeChosen = false;
-	private static ArrayList<Double> weights;
-	private static ArrayList<Integer> drops;
 	public View(Model model, String role) {
 		startGradebook(model, role);
 	}
@@ -144,14 +141,15 @@ public class View {
 		String teacherUsername = model.getCurrentUsersName();
 		System.out.println("Welcome " + teacherUsername);
 		String courseName = ""; // we'll want this soon probably
+		boolean skip = false;
 	
-		int mode = 0;
-		if(!modeChosen) {
-			mode = chooseMode(model, teacherUsername, scanner);
-			if(mode > 0) {
-				modeChosen = true;
-			}
-		}
+		//int mode = 0;
+		//if(!modeChosen) {
+		//	mode = chooseMode(model, teacherUsername, scanner);
+		//	if(mode > 0) {
+		//		modeChosen = true;
+		//	}
+		//}
 		
 		// COMMENT BY FATIH: In the future, we need to put this into a relevant place, but for not it's good.
 		ArrayList<String> courses = model.getCurCoursesTeacher(teacherUsername);
@@ -181,28 +179,37 @@ public class View {
 			courseName = numCourse;
 		}
 		
+		if ((model.isSetUp(courseName) == 0)) {
+			chooseMode(model, teacherUsername, scanner, courseName);
+		}
+		
 		while (teacherState) {
-			System.out.println("\nTeacher Menu:\n");
-			System.out.println("1. View completed courses");
-			System.out.println("2. View current courses");
-			System.out.println("3. Add assignment to a course");
-			System.out.println("4. Remove assignment from a course");
-			System.out.println("5. Add student to a course");
-			System.out.println("6. Remove student from a course");
-			System.out.println("7. Import list of students from file");
-			System.out.println("8. View students enrolled in a course");
-			System.out.println("9. Add grades for students for an assignment");
-			System.out.println("10. Calculate class averages and medians on assignments");
-			System.out.println("11. Calculate a student's current average");
-			System.out.println("12. Sort students by first name");
-			System.out.println("13. Sort students by last name");
-			System.out.println("14. Sort students by username");
-			System.out.println("15. Sort students by grades on an assignment");
-			System.out.println("16. Put students in groups");
-			System.out.println("17. Assign final grades (A, B, C, D, E) to students");
-			System.out.println("18. View ungraded assignments");
-			System.out.println("0. Return to main menu");
-			
+			if (skip) {
+				System.out.println("You may now enter a new command, or enter something else to show the list again.");
+				System.out.println("(IE: Type a letter, or just enter nothing.)");
+			} else {
+				System.out.println("\nTeacher Menu:\n");
+				System.out.println("1. View completed courses");
+				System.out.println("2. View current courses");
+				System.out.println("3. Add assignment to a course");
+				System.out.println("4. Remove assignment from a course");
+				System.out.println("5. Add student to a course");
+				System.out.println("6. Remove student from a course");
+				System.out.println("7. Import list of students from file");
+				System.out.println("8. View students enrolled in a course");
+				System.out.println("9. Add grades for students for an assignment");
+				System.out.println("10. Calculate class averages and medians on assignments");
+				System.out.println("11. Calculate a student's current average");
+				System.out.println("12. Sort students by first name");
+				System.out.println("13. Sort students by last name");
+				System.out.println("14. Sort students by username");
+				System.out.println("15. Sort students by grades on an assignment");
+				System.out.println("16. Put students in groups");
+				System.out.println("17. Assign final grades (A, B, C, D, E) to students");
+				System.out.println("18. View ungraded assignments");
+				System.out.println("0. Return to main menu");
+				skip = true;
+			}
 			String choice = scanner.nextLine().strip();
 			
 			switch(choice) {
@@ -365,7 +372,7 @@ public class View {
 				case "17":
 					// assignFinalGrades(model, username);
 					if(model.canAssignFinalGrades(courseName)) {
-						model.assignFinalGrade(courseName, mode, weights, drops);
+						model.assignFinalGrade(courseName);
 					} else {
 						System.out.println("You cannot assign final grades because the course is not completed");
 					}
@@ -388,7 +395,7 @@ public class View {
 					break;
 				default:
 					System.out.println("Invalid choice. Please try again.");
-					//showTeacherMenu(scanner, teacherUsername, model);
+					skip = false;
 					break;
 			}
 		}
@@ -400,74 +407,61 @@ public class View {
 		
 	}
 
-	private static int chooseMode(Model model, String teacherUsername, Scanner scanner) {
+	private static void chooseMode(Model model, String teacherUsername, Scanner scanner, String nameCourse) {
 		System.out.println("\nYou need to choose mode for calculating class average.");
 		ArrayList<String> courses = model.getCurCoursesTeacher(teacherUsername);
-		if(courses.size() == 0) {
-			System.out.println("You are not teaching any course");
+		if(!courses.contains(nameCourse)) {
+			System.out.println("The course " + nameCourse + " does not exist.");
 		} else {
-			System.out.println("Your current courses:");
-			int i = 1;
-			for(String course: courses) {
-				System.out.println(i + ") " + course);
-				i++;
-			}
-			System.out.print("Enter a course name: ");
-			String nameCourse = scanner.nextLine();
-			if(!courses.contains(nameCourse)) {
-				System.out.println("The course " + nameCourse + " does not exist.");
-			} else {
-				System.out.println();
-				System.out.println("Modes for calculating class averages:");
-				System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
-				System.out.println("2) The final grade is based on categories and percentages");
-				System.out.print("Choose an option: ");
-				String option = scanner.nextLine();
-				if(option.strip().equals("1")) {
-					// Final Grade = Total Points Earned/Total Points Possible
-					model.calculateClassAverage(1, nameCourse);	
-					return 1;
-					
-				} else if(option.strip().equals("2")) {
-					// The final grade is based on categories and percentages
-					// Set up categories
-					String[] assignmentTypes = {"Midterms", "Final Exam", "Quizes", "Homeworks", "Projects"};
-					System.out.println("\nAssign weights for following categories:");
-					weights = new ArrayList<Double>();
-					for(int j = 0; j < 5; j++) {
-						System.out.print("Enter a weight for " + assignmentTypes[j] + ": ");
-						String weight = scanner.nextLine();
-						while(!isNumeric(weight)) {
-							// further validation needed (what if total weight > 100)
-							System.out.println("Enter a valid number: ");
-							weight = scanner.nextLine();
-						}
-						double tempWeight = Double.parseDouble(weight);
-						weights.add(tempWeight);
+			System.out.println();
+			System.out.println("Modes for calculating class averages:");
+			System.out.println("1) Final Grade = Total Points Earned/Total Points Possible");
+			System.out.println("2) The final grade is based on categories and percentages");
+			System.out.print("Choose an option: ");
+			String option = scanner.nextLine();
+			if(option.strip().equals("1")) {
+				// Final Grade = Total Points Earned/Total Points Possible
+				ArrayList<Double> weights = new ArrayList<Double>();
+				ArrayList<Integer> drops = new ArrayList<Integer>();
+				model.calculateClassAverage(1, nameCourse, weights, drops);	
+				
+			} else if(option.strip().equals("2")) {
+				// The final grade is based on categories and percentages
+				// Set up categories
+				String[] assignmentTypes = {"Midterms", "Final Exam", "Quizes", "Homeworks", "Projects"};
+				System.out.println("\nAssign weights for following categories:");
+				ArrayList<Double> weights = new ArrayList<Double>();
+				for(int j = 0; j < 5; j++) {
+					System.out.print("Enter a weight for " + assignmentTypes[j] + ": ");
+					String weight = scanner.nextLine();
+					while(!isNumeric(weight)) {
+						// further validation needed (what if total weight > 100)
+						System.out.println("Enter a valid number: ");
+						weight = scanner.nextLine();
 					}
-					drops = new ArrayList<Integer>();
-					drops.add(0);
-					drops.add(0);
-					System.out.println("Now you need to enter number of drops for assignments.");
-					for(int j = 2; j < 5; j++) {
-						System.out.print("Enter a number of drops for " + assignmentTypes[j] + ": ");
-						String drop = scanner.nextLine();
-						while(!isNumeric(drop)) {
-							// further validation needed (what if total weight > 100)
-							System.out.println("Enter a valid number: ");
-							drop = scanner.nextLine();
-						}
-						int tempDrop = Integer.parseInt(drop);
-						drops.add(tempDrop);
-					}
-					model.calculateClassAverage(2, nameCourse);
-					return 2;
-				} else {
-					System.out.println("Invalid input!");
+					double tempWeight = Double.parseDouble(weight);
+					weights.add(tempWeight);
 				}
+				ArrayList<Integer> drops = new ArrayList<Integer>();
+				drops.add(0);
+				drops.add(0);
+				System.out.println("Now you need to enter number of drops for assignments.");
+				for(int j = 2; j < 5; j++) {
+					System.out.print("Enter a number of drops for " + assignmentTypes[j] + ": ");
+					String drop = scanner.nextLine();
+					while(!isNumeric(drop)) {
+						// further validation needed (what if total weight > 100)
+						System.out.println("Enter a valid number: ");
+						drop = scanner.nextLine();
+					}
+					int tempDrop = Integer.parseInt(drop);
+					drops.add(tempDrop);
+				}
+				model.calculateClassAverage(2, nameCourse, weights, drops);
+			} else {
+				System.out.println("Invalid input!");
 			}
 		}
-		return 0;
 	}
 
 	

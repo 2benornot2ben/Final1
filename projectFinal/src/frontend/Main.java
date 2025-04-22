@@ -1,9 +1,7 @@
 package frontend;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -20,17 +18,15 @@ public class Main {
 		 * knowing where to ask about logging in. */
 		
 		Scanner getInput = new Scanner(System.in);
-		//AccountStorage storage = new AccountStorage();
-		//Database database = new Database(storage);
-		String bleh;
+		String jsonThing;
 		AccountStorage storage;
 		Database database;
 		System.out.println("Load from json? (y/n)");
 		if (getInput.nextLine().toLowerCase().equals("y")) {
+			System.out.println("Please give json file name: (Dont include the .json)");
 			try {
-				bleh = Files.readString(Paths.get("savedata.json"));
-				System.out.println(bleh);
-				database = new ObjectMapper().readValue(bleh, Database.class);
+				jsonThing = Files.readString(Paths.get(getInput.nextLine().strip() + ".json"));
+				database = new ObjectMapper().readValue(jsonThing, Database.class);
 				storage = new AccountStorage();
 				database.updateUnpacking(storage);
 				System.out.println("Successfully loaded.");
@@ -106,11 +102,25 @@ public class Main {
 			} else if (option.split(" ")[0].equals("3")) {
 				// This would NOT EXIST in real life. This is just so you
 				// can avoid a resource leak!
-				running = false;
-				getInput.close();
-				database.updateForPacking(storage);
-				database.JsonConversion();
-				System.out.println("Converted to json!");
+				String holdInputTwice = "";
+				while (running) {
+					System.out.println("Would you like to save to json? (y/n)");
+					holdInputTwice = getInput.nextLine().strip().toLowerCase();
+					if (holdInputTwice.equals("y")) {
+						System.out.println("Please give the json file name you want to save to (don't include the .json)");
+						database.updateForPacking(storage);
+						database.JsonConversion(getInput.nextLine().strip() + ".json");
+						System.out.println("Converted to json!");
+						running = false;
+					} else if (holdInputTwice.equals("n")) {
+						running = false;
+						getInput.close();
+						System.out.println("Thanks for using gradebook!");
+					} else {
+						System.out.println("You're very lucky I thought someone might mistype here.");
+						System.out.println("But then you'd lose everything when you might not want to. Try again.");
+					}
+				}
 			} else {
 				System.out.println("Invalid input.");
 			}
