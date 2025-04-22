@@ -117,6 +117,7 @@ public class Database {
 			teacherMap.get(teacherName).addCourse(course);
 			//assignment also should be here
 			courseMap.put(courseName, course);
+			tempAssignmentMap = new HashMap<String, Assignment>();
 			tempStudentMap = new HashMap<String, Student>();
 			myReader.close();
 		}

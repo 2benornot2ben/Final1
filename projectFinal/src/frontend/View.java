@@ -243,18 +243,47 @@ public class View {
 					viewStudentsEnrolled(model, teacherUsername, scanner);
 					break;
 				case "9":
-					System.out.println("Enter student name: ");
-					String stuNameHolder = scanner.nextLine().strip();
+					boolean gradedFully = true;
+					System.out.println("Ungraded assignments for " + courseName);
+					HashSet<String> currentAssignments = model.getUngradedAssignments(courseName);
+					if (currentAssignments == null || currentAssignments.isEmpty()) {
+				        System.out.println("None, course completed");
+				        break;
+				    } else {
+				        for (String assignment : currentAssignments) {
+				            System.out.println(assignment);
+				        }
+				    }
 					System.out.println("Enter assignment name: ");
 					String assignNameHolder = scanner.nextLine().strip();
-					System.out.println("Enter grade: ");
-					String gradeNumHolder = scanner.nextLine().strip();
-					if (isNumeric(gradeNumHolder)) {
-						double gradeNumHolderDoub = Double.parseDouble(gradeNumHolder);
-						addGrades(model, stuNameHolder, assignNameHolder, gradeNumHolderDoub, scanner, courseName);
-					} else {
-						System.out.println("Invalid grade...");
-						// We're actually fine with pretty much any value here; that's what extra credit is, anyways.
+					while(!currentAssignments.contains(assignNameHolder)) {
+						System.out.println("Enter assignment name: ");
+						assignNameHolder = scanner.nextLine().strip();
+					}
+					ArrayList<String> studentUsernames = model.getStudentList(courseName);
+					for(int k = 0; k < studentUsernames.size(); k++) {
+						String stuNameHolder = studentUsernames.get(k);
+						System.out.print("Enter grade in percentage(1-100) for " + stuNameHolder + ": ");
+						String gradeNumHolder = scanner.nextLine().strip();
+						if (isNumeric(gradeNumHolder)) {
+							double gradeNumHolderDoub = Double.parseDouble(gradeNumHolder);
+							while(gradeNumHolderDoub > 100 || gradeNumHolderDoub < 0) {
+								System.out.print("Enter grade in percentage(1-100) for " + stuNameHolder + ": ");
+								gradeNumHolder = scanner.nextLine().strip();
+								gradeNumHolderDoub = Double.parseDouble(gradeNumHolder);
+							}
+							addGrades(model, stuNameHolder, assignNameHolder, gradeNumHolderDoub, scanner, courseName);
+						} else {
+							System.out.println("Invalid grade...");
+							gradedFully = false;
+							break;
+						}
+					}	
+					if(gradedFully) {
+						model.setAssignmentGraded(courseName, assignNameHolder);
+						if(model.checkCompleted(courseName)) {
+							model.completeCourse(courseName);
+						}
 					}
 					break;
 				case "10":

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 public class Course {
 	private HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
 	private String courseName;
-	
 	@JsonIgnore
 	private Teacher teacher; // Comment: Should each course have a teacher?
 	@JsonIgnore
@@ -62,6 +61,9 @@ public class Course {
 		this.finalGrades = finalGrades;
 	}
 	
+	protected Double getTotalGrade() {
+		return totalGrade;
+	}
 	public String getCourseName() {
 		return courseName;
 	}
@@ -117,6 +119,10 @@ public class Course {
 		return gradedAssignments;
 	}
 	
+	protected void completeCourse() {
+		this.completed = true;
+	}
+	
 	public HashSet<String> getUngradedAssignments() {
 		HashSet<String> ungradedAssignments = new HashSet<String>();
 		for (String key : assignmentMap.keySet()) {
@@ -125,6 +131,10 @@ public class Course {
 			}
 		}
 		return ungradedAssignments;
+	}
+	
+	protected void setGraded(String assignment) {
+		assignmentMap.get(assignment).graded();
 	}
 	
 	public HashSet<String> getGradedAssignmentsUSER(String username) {
@@ -171,7 +181,6 @@ public class Course {
 	 * */
 	
 	protected ArrayList<Student> getStudentMap(){
-		System.out.println("aa"+studentMap);
 		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
 		for(Student student : studentMap.values()) {
 			copyStudentMap.add(student);
