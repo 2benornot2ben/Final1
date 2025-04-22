@@ -39,6 +39,19 @@ public class Model {
 		return course.getUngradedAssignmentsUSER(studentUsername); // I believe no escaping reference here but could someone please confirm?
 	}
 	
+	public ArrayList<String> getStudentList(String courseName){
+		ArrayList<Student> students = fullCourseMap.get(courseName).getStudentMap();
+		ArrayList<String> studentUsernames = new ArrayList<String>();
+		for(Student s: students) {
+			studentUsernames.add(s.getUsername());
+		}
+		return studentUsernames;
+	}
+	
+	public void setAssignmentGraded(String courseName, String assignment) {
+		fullCourseMap.get(courseName).setGraded(assignment);
+	}
+	
 	public double getCourseAverage(String courseName) {
 		return fullCourseMap.get(courseName).getCourseAverage();
 	}
@@ -209,6 +222,17 @@ public class Model {
 		return students;
 	}
 	
+	public boolean checkCompleted(String courseName) {
+		if(this.getUngradedAssignments(courseName).size() > 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void completeCourse(String courseName) {
+		fullCourseMap.get(courseName).completeCourse();
+	}
+	
 	public ArrayList<Student> sortByUserName(String courseName) {
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
@@ -266,16 +290,16 @@ public class Model {
 					}
 				}
 			}
-			System.out.println(tempGrades);
+			for(String j : tempGrades.keySet()) {
+				double tempTotal = tempGrades.get(j) / fullCourseMap.get(courseName).getTotalGrade() * 100;
+				System.out.println(fullCourseMap.get(courseName).getTotalGrade() + ": " + tempTotal + " | "+tempGrades.get(j));
+				finalGrades.put(j, this.calculateGrade(tempTotal));
+			}
+			System.out.println(finalGrades);
 		}
 	}
 	
-	public void calculateClassAverage(int option, String courseName) { 
-		// for teachers
-		
-		//Option 2: The final grade is based on categories and percentages.
-		
-		// course should come as a parameter (ig)
+	public void calculateClassAverage(int option, String courseName) {
 		HashMap<String, Assignment> assignmentMap = fullCourseMap.get(courseName).getAssignmentsMap();
 		if(option == 1) {
 			//Option 1: Final Grade = Total Points Earned/Total Points Possible. Basically, all
@@ -299,7 +323,8 @@ public class Model {
 				int type = assignment.getType().ordinal();
 				assignment.setMaxGrade(maxGrades[type]);
 			}
-			fullCourseMap.get(courseName).setTotalGrade(maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
+			//more appropriate way needed.
+			fullCourseMap.get(courseName).setTotalGrade(2*maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
 		} else {
 			for (Assignment assignment: assignmentMap.values()) {
 				assignment.setMaxGrade(100);
@@ -312,16 +337,6 @@ public class Model {
 			return false;
 		}
 		return true;
-	}
-	
-	public void setUpCategories() {
-		// for teachers
-		// In a course that uses categories, there should be the option to “drop” a certain number of
-		// assignments with the lowest grade and to assign weights to the different categories.
-		
-		// course should come as a parameter (ig)
-		
-		// Is this necessary? - Ben
 	}
 	
 	public void createCourses(String filename) {
@@ -388,7 +403,6 @@ public class Model {
 	}
 	
 	public boolean canCreateGroups(String courseName, int num) {
-		System.out.println("a:" + fullCourseMap.get(courseName));
 		if(num <= fullCourseMap.get(courseName).getStudentMap().size()) {
 			return true;
 		}
@@ -402,5 +416,19 @@ public class Model {
 	
 	public void getCategories(String courseName, String assignmentName, String category) {
 		fullCourseMap.get(courseName).addAssignment(assignmentName, category);
+	}
+	
+	private FinalGrade calculateGrade(Double grade) {
+		if(grade >= 90) {
+			return FinalGrade.A;
+		} else if(grade >= 80) {
+			return FinalGrade.B;
+		} else if(grade >= 70) {
+			return FinalGrade.C;
+		} else if(grade >= 60) {
+			return FinalGrade.D;
+		} else {
+			return FinalGrade.E;
+		}
 	}
 }

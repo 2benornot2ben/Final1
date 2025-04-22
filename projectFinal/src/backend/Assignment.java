@@ -46,6 +46,10 @@ public class Assignment {
 		return graded;
 	}
 	
+	public void graded() {
+		this.graded = true;
+	}
+	
 	public void setType(AssignmentType Type) {
 		this.type = Type;
 	}
@@ -60,7 +64,9 @@ public class Assignment {
 	}
 	
 	protected void gradeStudent(Student student, double grade) {
-		idToGrade.put(student.getUsername(), grade);
+		double points = this.maxGrade * grade / 100;
+		System.out.println(student.getUsername() + " " + points);
+		idToGrade.put(student.getUsername(), points);
 		// This actually replaces if one's in already, so we're fine.
 	}
 	
