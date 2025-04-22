@@ -23,13 +23,6 @@ public class Student extends User {
 		this.lastName = last;
 	}
 	
-	// This is meant for IMPORTING
-	protected Student(String first, String last, String user, HashMap<String, Course> courseMap) {
-		super(user, courseMap);
-		this.firstName = first;
-		this.lastName = last;
-	}
-	
 	public String getFirstName(){
 		return firstName;
 	}

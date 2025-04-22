@@ -195,7 +195,7 @@ public class Database {
 		
 	}
 	
-	public void JsonConversion() {
+	public void JsonConversion(String filename) {
 		for (User i : accountList.values()) {
 			i.packUpReferences();
 		}
@@ -212,7 +212,7 @@ public class Database {
 		    //String json = objectMapper.writeValueAsString(new MyDtoNoAccessors());
 		    String json = objectMapper.writeValueAsString(this);
 			
-			File file = new File("savedata.json");
+			File file = new File(filename);
             // If the file doesn't exist, create it
             if (!file.exists()) {
                 file.createNewFile();

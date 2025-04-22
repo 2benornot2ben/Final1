@@ -22,30 +22,20 @@ public class Assignment {
 		this.type = type;
 	}
 	
-	// This is meant for IMPORTING
-	protected Assignment(String assignmentName, int maxGrade,
-			HashMap<String,Double> idToGrade, boolean graded) {
-		this.assignmentName = assignmentName;
-		this.maxGrade = maxGrade;
-		this.idToGrade = new HashMap<String, Double>(idToGrade);
-		this.graded = graded;
-	}
-	
-	
 	// Updates Behruz
-	public Double getStudentGrade(String username) {
-        return idToGrade.get(username);
-    }
-	
-	public ArrayList<Double> getAllGrades() {
-        ArrayList<Double> grades = new ArrayList<>();
-        for (Double grade : idToGrade.values()) {
-            if (grade != null) {
-                grades.add(grade);
-            }
-        }
-        return grades;
-    }
+	 	public Double getStudentGrade(String username) {
+	         return idToGrade.get(username);
+	     }
+	 	
+	 	public ArrayList<Double> getAllGrades() {
+	         ArrayList<Double> grades = new ArrayList<>();
+	         for (Double grade : idToGrade.values()) {
+	             if (grade != null) {
+	                 grades.add(grade);
+	             }
+	         }
+	         return grades;
+	     }
 	
 	protected HashMap<String, Double> getIdToGrade(){
 		return idToGrade;

@@ -1,8 +1,12 @@
 package frontend;
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.*;
 
@@ -14,8 +18,29 @@ public class Main {
 		 * knowing where to ask about logging in. */
 		
 		Scanner getInput = new Scanner(System.in);
-		AccountStorage storage = new AccountStorage();
-		Database database = new Database(storage);
+		String jsonThing;
+		AccountStorage storage;
+		Database database;
+		System.out.println("Load from json? (y/n)");
+		if (getInput.nextLine().toLowerCase().equals("y")) {
+			System.out.println("Please give json file name: (Dont include the .json)");
+			try {
+				jsonThing = Files.readString(Paths.get(getInput.nextLine().strip() + ".json"));
+				database = new ObjectMapper().readValue(jsonThing, Database.class);
+				storage = new AccountStorage();
+				database.updateUnpacking(storage);
+				System.out.println("Successfully loaded.");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Error!");
+				storage = new AccountStorage();
+				database = new Database(storage);
+			}
+		} else {
+			System.out.println("Loading from txt...");
+			storage = new AccountStorage();
+			database = new Database(storage);
+		}
 		boolean running = true;
 		while(running) {
 			System.out.println("Who are you?");
@@ -77,8 +102,25 @@ public class Main {
 			} else if (option.split(" ")[0].equals("3")) {
 				// This would NOT EXIST in real life. This is just so you
 				// can avoid a resource leak!
-				running = false;
-				getInput.close();
+				String holdInputTwice = "";
+				while (running) {
+					System.out.println("Would you like to save to json? (y/n)");
+					holdInputTwice = getInput.nextLine().strip().toLowerCase();
+					if (holdInputTwice.equals("y")) {
+						System.out.println("Please give the json file name you want to save to (don't include the .json)");
+						database.updateForPacking(storage);
+						database.JsonConversion(getInput.nextLine().strip() + ".json");
+						System.out.println("Converted to json!");
+						running = false;
+					} else if (holdInputTwice.equals("n")) {
+						running = false;
+						getInput.close();
+						System.out.println("Thanks for using gradebook!");
+					} else {
+						System.out.println("You're very lucky I thought someone might mistype here.");
+						System.out.println("But then you'd lose everything when you might not want to. Try again.");
+					}
+				}
 			} else {
 				System.out.println("Invalid input.");
 			}

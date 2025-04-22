@@ -2,7 +2,6 @@ package backend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,16 +26,6 @@ public class User { // User is both student & teacher - use this for methods use
 	public User(String username) {
 		this.username = username;
 		courseMap = new HashMap<String, Course>();
-	}
-	
-	@SuppressWarnings("unchecked") // courseList should never have issues with this.
-	// This constructor is meant for IMPORTING. 
-	protected User(String username, HashMap<String, Course> courseMap) {
-		this.username = username;
-		this.courseMap = (HashMap<String, Course>) courseMap.clone(); // This only makes a SHALLOW COPY.
-		// Trust me, deep copies are 10x more annoying...
-		// For passing to the front end, you probably have better luck converting any HashSet
-		// to an arraylist and then just passing that. (No, just using arraylists isn't any faster)
 	}
 	
 	protected ArrayList<String> getCurCourses(){
