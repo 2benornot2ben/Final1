@@ -2,6 +2,7 @@ Gradebook by Ben, Behruz, Davran and Fatih
 Before running, note that certain external libraries are required. (These might come bundled with the runnable)
 To run, first boot up the jar (of course), then you will be prompted for how you want to load it.
 If you want to go by txt, make sure you have a students.txt, teachers.txt, courses.txt, and in that courses.txt, have the file names of the other courses you want to add.
+
 Each (coursename).txt will have the course description at the top and a list of the students inside the course below.
 Alternatively, you can load by json, which simply handles everything when properly made.
 Next, you need to log in. You need to log in as a student or teacher, thus you must provide their username. You will notice it tells you to create a password - first logins will always have you create the password instead of entering one.
