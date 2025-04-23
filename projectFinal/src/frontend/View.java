@@ -15,7 +15,6 @@ public class View {
 	public static void startGradebook(Model model, String role) {
 		
 		// Model comes imported with all the courses
-		
 
 		Scanner scanner =  new Scanner(System.in);
 		boolean running =  true;
@@ -294,20 +293,32 @@ public class View {
 					}
 					break;
 				case "10":
-					// Calculate class averages / medians
+					
+					// Calculates class averages and medians on an assignment
+
+	                System.out.println("Enter assignment name: ");
+
+	                String assignmentNameForStats = scanner.nextLine().strip();
+
+	                String statsResult = model.calculateStats(courseName, assignmentNameForStats);
+
+	                System.out.println(statsResult);
+
+	                break;
 				case "11":
 					System.out.println("Enter student username: ");
 					String studentUsername = scanner.nextLine().strip();
 					calculateStudentCurAverage(model, studentUsername);
 					break;
 				case "12":
-					System.out.println("Enter course name: ");
-					String courseNameForSortFirst = scanner.nextLine().strip();
-					ArrayList<Student> sortedStudentsByFirst = model.sortByFirstName(courseNameForSortFirst);
+					
+					// Sorts students by their First Name 
+					
+					ArrayList<Student> sortedStudentsByFirst = model.sortByFirstName(courseName);
 					if (sortedStudentsByFirst == null) {
 				        System.out.println("Course not found.");
 				    } else if (sortedStudentsByFirst.isEmpty()) {
-				        System.out.println("No students enrolled in " + courseNameForSortFirst);
+				        System.out.println("No students enrolled in " + courseName);
 				    } else {
 				        System.out.println("Students sorted by first name:");
 				        for (Student student : sortedStudentsByFirst) {
@@ -316,13 +327,14 @@ public class View {
 				    }
 					break;
 				case "13":
-					System.out.println("Enter course name: ");
-					String courseNameForSortLast = scanner.nextLine().strip();
-					ArrayList<Student> sortedStudentsByLast = model.sortByFirstName(courseNameForSortLast);
+					
+					// Sorts students by their Last Name 
+					
+					ArrayList<Student> sortedStudentsByLast = model.sortByLastName(courseName);
 					if (sortedStudentsByLast == null) {
 				        System.out.println("Course not found.");
 				    } else if (sortedStudentsByLast.isEmpty()) {
-				        System.out.println("No students enrolled in " + courseNameForSortLast);
+				        System.out.println("No students enrolled in " + courseName);
 				    } else {
 				        System.out.println("Students sorted by last name:");
 				        for (Student student : sortedStudentsByLast) {
@@ -331,13 +343,14 @@ public class View {
 				    }
 					break;
 				case "14":
-					System.out.println("Enter course name: ");
-					String courseNameForSortUser = scanner.nextLine().strip();
-					ArrayList<Student> sortedStudentsByUser= model.sortByFirstName(courseNameForSortUser);
+					
+					// Sorts students by their Username
+					
+					ArrayList<Student> sortedStudentsByUser= model.sortByUserName(courseName);
 					if (sortedStudentsByUser == null) {
 				        System.out.println("Course not found.");
 				    } else if (sortedStudentsByUser.isEmpty()) {
-				        System.out.println("No students enrolled in " + courseNameForSortUser);
+				        System.out.println("No students enrolled in " + courseName);
 				    } else {
 				        System.out.println("Students sorted by username:");
 				        for (Student student : sortedStudentsByUser) {
@@ -346,7 +359,36 @@ public class View {
 				    }
 					break;
 				case "15":
-					// sortStudentsByAssignment(model, username);
+					
+					// Sorts students by their grades on an assignment  
+					
+					System.out.println("Enter the assingment: ");
+					String assignmentNameForSort = scanner.nextLine().strip();
+
+					ArrayList<Student> sortedStudentsByGrade = model.sortByGrades(courseName, assignmentNameForSort);
+
+					if(sortedStudentsByGrade == null) {	
+				        System.out.println("Course or assingment not found.");
+
+					}else if (sortedStudentsByGrade.isEmpty()) {
+				        System.out.println("No students enrolled in " + courseName); 
+
+					} else {
+						System.out.println("Students sorted by grades on " + assignmentNameForSort + ":");
+
+	                    for (Student student : sortedStudentsByGrade) {
+	                    	Double grade = model.getStudentGrade(student.getUsername(), courseName, assignmentNameForSort);
+
+	                        String gradeDisplay;
+
+	                        if (grade != null) {
+	                            gradeDisplay = String.format("%.2f", grade);
+	                        } else {
+	                            gradeDisplay = "Not graded";
+	                        }
+	                        System.out.println(student.getPrintFormatted() + " - Grade: " + gradeDisplay);
+	                    }
+					}
 					break;
 				case "16":
 					// putStudentsInGroups(model, username);
@@ -378,6 +420,9 @@ public class View {
 					}
 					break;
 				case "18":
+					
+					// To view ungraded assignments on the course
+					
 					System.out.println("Enter course name: ");
 					String viewUngradedAssignments = scanner.nextLine().strip();
 					HashSet<String> ungradedAssignments= model.getUngradedAssignments(viewUngradedAssignments);
