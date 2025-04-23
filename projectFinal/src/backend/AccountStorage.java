@@ -5,6 +5,16 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+// Security imports
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 import frontend.View;
 
@@ -23,11 +33,15 @@ public class AccountStorage {
 	}
 	
 	public void setAccount(String username, String password, Database database, boolean isTeacher) {
-		privateData.put(username, hashPassword(password)); // more secure encryption needed
-		User holdUser = database.returnCorrectUser(username);
-		Model myModel = new Model(database, holdUser);
-		modelMap.put(username, myModel);
+        byte[] salt = generateSalt(); // Generate random salt
+        String saltBase64 = Base64.getEncoder().encodeToString(salt);
+        String hash = hashPassword(password, salt); // Hash password with Argon2
+		privateData.put(username, saltBase64 + ":" + hash);
+        User holdUser = database.returnCorrectUser(username);
+        Model myModel = new Model(database, holdUser);
+        modelMap.put(username, myModel);
 	}
+	
 	// if profession doesnt match "student" or "teacher", it checks everyone instead.
 	public boolean userExist(String user, String profession) {
 		if (profession.equals("teacher") && !(accountList.get(user) instanceof Teacher)) return false;
@@ -42,13 +56,24 @@ public class AccountStorage {
 		return !privateData.containsKey(user);
 	}
 	
-	public boolean canLogIn(String user, String password){
-		if(privateData.containsKey(user)) {
-			if(privateData.get(user).equals(hashPassword(password))) {
-				return true;
-			}
+	public boolean canLogIn(String user, String password){	
+		if(!privateData.containsKey(user)) {
+			return false;
 		}
-		return false;
+
+		String storedData =  privateData.get(user);
+
+		String[] parts = storedData.split(":", 2);
+
+        if (parts.length != 2) {
+           return false; // Invalid format
+        }
+
+        String saltBase64 = parts[0];
+        String storedHash = parts[1];
+        byte[] salt = Base64.getDecoder().decode(saltBase64);
+        String computedHash = hashPassword(password, salt);
+        return storedHash.equals(computedHash);
 	}
 	
 	//@SuppressWarnings("unused")
@@ -61,28 +86,26 @@ public class AccountStorage {
 	}
 	
 	
-	// we need to use stronger encryption for now this works
+
+	private byte[] generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16]; // 128-bit salt
+        random.nextBytes(salt);
+        return salt;
+    }
 	
-	private String hashPassword(String password) {
-		/* Uses MD5 hashing for encryption!
-		 * Also uses salting with bigInteger, so even
-		 * small passwords return massive blocks. */
-		try {
-			// This strategy of hashing isn't the strongest, but it's
-			// good enough. Messagedigest hashes, biginteger salts.
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(password.getBytes());
-            BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-            return hashtext;
+	// we used Agron 2 for password hashing
+	
+	private String hashPassword(String password, byte[] salt) {
+        try {
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 100000, 256);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hash = skf.generateSecret(spec).getEncoded();
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (Exception e) {
+            throw new RuntimeException("Error hashing password", e);
         }
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-	}
+    }
 	
 	protected HashMap<String, User> packingAccountStorage() {
 		return accountList;
