@@ -39,10 +39,10 @@ public class AccountStorageTest {
 		HashMap<String, String> privateData = new HashMap<>();
 		privateData.put("Fatih", "1234");
 		
-		// ac.openModel("Fatih", "1234", "student"); // work on this once you finish model
 		
 		ac.unpackingJson(accountList, privateData, db);
 
+		ac.openModel("Fatih", "1234", "student"); 
 		
 	}
 	
