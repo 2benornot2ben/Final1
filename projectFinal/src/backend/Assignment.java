@@ -1,3 +1,13 @@
+/**************************************************************
+ * Author: Davranbek Kadirimbetov, Benjamin Kanter,
+ * 		   Fatih Bozdogan, & Behruz Ernazarov
+ * Description: Represents a course assignment and
+ * 	   manages the grading information for each student. It stores
+ *     individual student grades using a HashMap keyed by username,
+ *     tracks the maximum possible grade, and whether the assignment
+ *     has been fully graded.
+ **************************************************************/
+
 package backend;
 
 import java.util.ArrayList;
@@ -7,49 +17,60 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class Assignment {
-	private HashMap<String, Double> idToGrade; // First string is username, second is grade
-	private int maxGrade; // Note that going over is like a bonus grade.
-	private boolean graded; // If ALL is graded
+	private HashMap<String, Double> idToGrade;
+	private int maxGrade;
+	private boolean graded;
 	private String assignmentName;
 	private AssignmentType type;
-	// We need a way to distinguish between 0 (you got a 0) and 0 (it's not graded for you yet) for each student.
-	// Perhaps a secondary hashmap which uses the same int studentId, but holds a bool?
-	// Decide Later
 	public Assignment(String assignmentName, AssignmentType type) {
+		/*
+		 * Description: Constructor
+		 * Parameters: assignmentName: String representing the name of assignment
+		 * 			type: represents type of the assignment and it is Enum
+		 * Returns: None
+		 */
 		this.assignmentName = assignmentName;
-		//this.maxGrade = maxGrade;
 		idToGrade = new HashMap<String, Double>();
 		this.type = type;
 	}
 	
-	// Updates Behruz
-	 	public Double getStudentGrade(String username) {
-	         return idToGrade.get(username);
-	     }
+	public Double getStudentGrade(String username) {
+		// simple getter
+		return idToGrade.get(username);
+	}
 	 	
-	 	public ArrayList<Double> getAllGrades() {
-	         ArrayList<Double> grades = new ArrayList<>();
-	         for (Double grade : idToGrade.values()) {
-	             if (grade != null) {
-	                 grades.add(grade);
-	             }
-	         }
-	         return grades;
-	     }
+	public ArrayList<Double> getAllGrades() {
+		/*
+		 * Description: Returns all non-null student grades.
+		 * Parameters: None
+		 * Returns: ArrayList of Double values representing grades
+		 */
+		ArrayList<Double> grades = new ArrayList<>();
+	    for (Double grade : idToGrade.values()) {
+	    	if (grade != null) {
+	    		grades.add(grade);
+	        }
+	    }
+	    return grades;
+	}
 	
 	protected HashMap<String, Double> getIdToGrade(){
+		// simple getter
 		return idToGrade;
 	}
 	
 	public String getAssignmentName() {
+		// simple getter
 		return assignmentName;
 	}
 	
 	protected double getMaxGrade() {
+		// simple getter
 		return maxGrade;
 	}
 	
 	public boolean isGraded() {
+		// Checks whether all students have been graded.
 		return graded;
 	}
 	
@@ -58,51 +79,60 @@ public class Assignment {
 	}
 	
 	public void setType(AssignmentType Type) {
+		// simple setter
 		this.type = Type;
 	}
 	
 	
 	protected AssignmentType getType() {
+		// simple getter
 		return type;
 	}
 	
 	protected void setMaxGrade(int grade) {
+		// simple setter
 		maxGrade = grade;
 	}
 	
 	protected void gradeStudent(String courseName, Student student, double grade) {
+		/*
+		 * Description: Grades a student and updates their course average.
+		 * Parameters: courseName - String representing the course
+		 *     student - Student object
+		 *     grade - double representing grade as percentage (0–100)
+		 * Returns: None
+		 */
 		double points = this.maxGrade * grade / 100;
 		student.updateStudentAverageGrades(courseName, points);
 		idToGrade.put(student.getUsername(), points);
-		// This actually replaces if one's in already, so we're fine.
 	}
 	
 	@JsonIgnore
 	protected boolean getStudentGradeExists(String studentUsername) {
+		// simple getter
 		return (idToGrade.get(studentUsername) != null);
-		// Apparently, I have to do it like this. Funny, right?
 	}
-	// there might be other getters it depends on the functionality of Model methods
 	
-	// JSON METHODS
-	// As in, we don't use these, but the json needs them to exist..
-	
-	private Assignment() {
+	protected Assignment() {
+		// copy constructor
 		idToGrade = new HashMap<String, Double>();
 	};
 	
-	@JsonSetter
-	private void setidToGrade(HashMap<String, Double> idToGrade) {
+	@JsonSetter 
+	protected void setidToGrade(HashMap<String, Double> idToGrade) {
+		// json setter
 		this.idToGrade = idToGrade;
 	}
 	
 	@JsonSetter
-	private void setGraded(boolean graded) {
+	protected void setGraded(boolean graded) {
+		// json setter
 		this.graded = graded;
 	}
 	
 	@JsonSetter
-	private void setAssignmentName(String assignmentName) {
+	protected void setAssignmentName(String assignmentName) {
+		// json setter
 		this.assignmentName = assignmentName;
 	}
 }
