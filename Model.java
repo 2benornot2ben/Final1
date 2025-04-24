@@ -366,12 +366,14 @@ public class Model {
 		    for (String stu : allStudentIds) {
 		        double finalGrade = 0;
 		        for (AssignmentType type : AssignmentType.values()) {
+		        	System.out.println("assignment type " + type);
 		            ArrayList<Assignment> assignments = tempAssignments.get(type);
 		            ArrayList<Double> tempGrade = new ArrayList<>();
 		            for (Assignment assignment : assignments) {
 		                tempGrade.add(assignment.getIdToGrade().get(stu));
 		            }
 		            int drop = drops.get(type.ordinal());
+		            System.out.println(tempGrade);
 		            Collections.sort(tempGrade);
 		            while (drop > 0 && tempGrade.size() != 0) {
 		            	tempGrade.remove(0);
