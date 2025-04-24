@@ -70,9 +70,9 @@ public class Assignment {
 		maxGrade = grade;
 	}
 	
-	protected void gradeStudent(Student student, double grade) {
+	protected void gradeStudent(String courseName, Student student, double grade) {
 		double points = this.maxGrade * grade / 100;
-		System.out.println(student.getUsername() + " " + points);
+		student.updateStudentAverageGrades(courseName, points);
 		idToGrade.put(student.getUsername(), points);
 		// This actually replaces if one's in already, so we're fine.
 	}

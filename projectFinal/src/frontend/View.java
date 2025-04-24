@@ -33,7 +33,8 @@ public class View {
             System.out.println("\nStudent Menu:\n");
 			System.out.println("1. To view courses");
 			System.out.println("2. To view assignments");
-			System.out.println("3. To get GPA");
+			System.out.println("3. To get course average");
+			System.out.println("4. To get GPA");
 			System.out.println("0. Return to main menu");
 			
 			String choice = scanner.nextLine().strip();
@@ -50,7 +51,7 @@ public class View {
 				case "3":
 					System.out.println("Enter course name: ");
 					courseName = scanner.nextLine().strip();
-					getClassAverage(model, courseName);
+					getClassAverage(model, courseName, studentUsername);
 					break;
 				case "4":
 					getGpa(model, studentUsername);
@@ -72,7 +73,6 @@ public class View {
 		System.out.println();
 		System.out.println("1. To view current courses");
 		System.out.println("2. To view completed courses");
-		System.out.println("3. Get class average");
 		
 		String choice = scanner.nextLine().strip();
 		
@@ -123,14 +123,18 @@ public class View {
 		}
 	}
 	
-	public static void getClassAverage(Model model, String courseName) {
-		double avg = model.getCourseAverage(courseName);
+	public static void getClassAverage(Model model, String courseName, String stu) {
+		double avg = model.getCourseAverage(courseName, stu);
 		System.out.println("Class average for " + courseName + ": " + avg);
 	}
 
 	public static void getGpa(Model model, String username) {
 		double gpa = model.calculateGPA(username);
-		System.out.println("Student " + username + " GPA: " + gpa);
+		if(gpa == 0) {
+			System.out.println("Student " + username + " does not have GPA yet.");
+		} else {
+			System.out.println("Student " + username + " GPA: " + gpa);
+		}
 	}
 
 	
@@ -141,14 +145,6 @@ public class View {
 		System.out.println("Welcome " + teacherUsername);
 		String courseName = ""; // we'll want this soon probably
 		boolean skip = false;
-	
-		//int mode = 0;
-		//if(!modeChosen) {
-		//	mode = chooseMode(model, teacherUsername, scanner);
-		//	if(mode > 0) {
-		//		modeChosen = true;
-		//	}
-		//}
 		
 		// COMMENT BY FATIH: In the future, we need to put this into a relevant place, but for not it's good.
 		ArrayList<String> courses = model.getCurCoursesTeacher(teacherUsername);
@@ -159,17 +155,22 @@ public class View {
 			j++;
 		}
 		System.out.print("Select the course (Enter a number): ");
-		
-		String numCourse = scanner.nextLine();
-		if(isNumeric(numCourse)) {
-			if((Integer.parseInt(numCourse.split(" ")[0]) - 1) < courses.size()) {
-				numCourse = courses.get(Integer.parseInt(numCourse.split(" ")[0]) - 1);
+		String numCourse;
+		while(true) {
+			numCourse = scanner.nextLine();
+			if(isNumeric(numCourse)) {
+				if((Integer.parseInt(numCourse.split(" ")[0]) - 1) < courses.size()) {
+					numCourse = courses.get(Integer.parseInt(numCourse.split(" ")[0]) - 1);
+					break;
+				} else {
+					System.out.println("Wrong input");
+					System.out.print("Select the course (Enter a number): ");
+				}
+				
 			} else {
 				System.out.println("Wrong input");
+				System.out.print("Select the course (Enter a number): ");
 			}
-			
-		} else {
-			System.out.println("Wrong input");
 		}
 		if(!courses.contains(numCourse)) {
 			System.out.println("The course " + numCourse + " does not exist.");
@@ -194,18 +195,17 @@ public class View {
 				System.out.println("4. Remove assignment from a course");
 				System.out.println("5. Add student to a course");
 				System.out.println("6. Remove student from a course");
-				System.out.println("7. Import list of students from file");
-				System.out.println("8. View students enrolled in a course");
-				System.out.println("9. Add grades for students for an assignment");
-				System.out.println("10. Calculate class averages and medians on assignments");
-				System.out.println("11. Calculate a student's current average");
-				System.out.println("12. Sort students by first name");
-				System.out.println("13. Sort students by last name");
-				System.out.println("14. Sort students by username");
-				System.out.println("15. Sort students by grades on an assignment");
-				System.out.println("16. Put students in groups");
-				System.out.println("17. Assign final grades (A, B, C, D, E) to students");
-				System.out.println("18. View ungraded assignments");
+				System.out.println("7. View students enrolled in a course");
+				System.out.println("8. Add grades for students for an assignment");
+				System.out.println("9. Calculate class averages and medians on assignments");
+				System.out.println("10. Calculate a student's current average");
+				System.out.println("11. Sort students by first name");
+				System.out.println("12. Sort students by last name");
+				System.out.println("13. Sort students by username");
+				System.out.println("14. Sort students by grades on an assignment");
+				System.out.println("15. Put students in groups");
+				System.out.println("16. Assign final grades (A, B, C, D, E) to students");
+				System.out.println("17. View ungraded assignments");
 				System.out.println("0. Return to main menu");
 				skip = true;
 			}
@@ -237,18 +237,15 @@ public class View {
 					removeAssignment(model, courseName, assignmentNameToRemove, assignmentCategoryToRemove);
 					break;
 				case "5":
-					addStudent(model, teacherUsername, scanner);
+					addStudent(model, teacherUsername, scanner, courseName);
 					break;
 				case "6":
-					removeStudent(model, teacherUsername, scanner);
-					break;
-				case "7":
-					// importStudents(model, username);
+					removeStudent(model, teacherUsername, scanner, courseName);
 					break;	
-				case "8":
-					viewStudentsEnrolled(model, teacherUsername, scanner);
+				case "7":
+					viewStudentsEnrolled(model, teacherUsername, courseName);
 					break;
-				case "9":
+				case "8":
 					boolean gradedFully = true;
 					System.out.println("Ungraded assignments for " + courseName);
 					HashSet<String> currentAssignments = model.getUngradedAssignments(courseName);
@@ -292,7 +289,7 @@ public class View {
 						}
 					}
 					break;
-				case "10":
+				case "9":
 					
 					// Calculates class averages and medians on an assignment
 
@@ -305,12 +302,12 @@ public class View {
 	                System.out.println(statsResult);
 
 	                break;
-				case "11":
+				case "10":
 					System.out.println("Enter student username: ");
 					String studentUsername = scanner.nextLine().strip();
-					calculateStudentCurAverage(model, studentUsername);
+					calculateStudentCurAverage(courseName,model, studentUsername);
 					break;
-				case "12":
+				case "11":
 					
 					// Sorts students by their First Name 
 					
@@ -326,7 +323,7 @@ public class View {
 				        }
 				    }
 					break;
-				case "13":
+				case "12":
 					
 					// Sorts students by their Last Name 
 					
@@ -342,7 +339,7 @@ public class View {
 				        }
 				    }
 					break;
-				case "14":
+				case "13":
 					
 					// Sorts students by their Username
 					
@@ -358,7 +355,7 @@ public class View {
 				        }
 				    }
 					break;
-				case "15":
+				case "14":
 					
 					// Sorts students by their grades on an assignment  
 					
@@ -390,7 +387,7 @@ public class View {
 	                    }
 					}
 					break;
-				case "16":
+				case "15":
 					// putStudentsInGroups(model, username);
 					System.out.println("How many groups do you want: ");
 					String num = scanner.nextLine().strip();
@@ -411,21 +408,21 @@ public class View {
 						System.out.println("Your input is invalid");
 					}
 					break;	
-				case "17":
+				case "16":
 					// assignFinalGrades(model, username);
 					if(model.canAssignFinalGrades(courseName)) {
-						model.assignFinalGrade(courseName);
+						ArrayList<String> finalGrades = model.assignFinalGrade(courseName);
+						for(int i = 0; i < finalGrades.size(); i++) {
+							System.out.println(finalGrades.get(i));
+						}
 					} else {
 						System.out.println("You cannot assign final grades because the course is not completed");
 					}
 					break;
-				case "18":
+				case "17":
 					
 					// To view ungraded assignments on the course
-					
-					System.out.println("Enter course name: ");
-					String viewUngradedAssignments = scanner.nextLine().strip();
-					HashSet<String> ungradedAssignments= model.getUngradedAssignments(viewUngradedAssignments);
+					HashSet<String> ungradedAssignments= model.getUngradedAssignments(courseName);
 					if (ungradedAssignments == null || ungradedAssignments.isEmpty()) {
 				        System.out.println("Ungraded assignments not found.");
 				    } else {
@@ -448,7 +445,7 @@ public class View {
 	
 	private static void addGrades(Model model, String stuNameHolder, String assignNameHolder, double gradeNumHolderDoub,
 			Scanner scanner, String courseName) {
-		System.out.println(model.addGradeForAssignment(stuNameHolder, assignNameHolder, gradeNumHolderDoub, scanner, courseName));
+		System.out.println(model.addGradeForAssignment(stuNameHolder, assignNameHolder, gradeNumHolderDoub, courseName));
 		
 	}
 
@@ -547,39 +544,30 @@ public class View {
                 " has successfully been removed from the course \"" + courseName + "\".");
 	}
 
-	public static void calculateStudentCurAverage(Model model, String studentUsername) {
-		double avg = model.calculateStudentCurAverage(studentUsername);
-		System.out.println("Student " + studentUsername + " average: " + avg);
+	public static void calculateStudentCurAverage(String course,Model model, String studentUsername) {
+		if(model.canCalculateStudentCurAverage(course,studentUsername)) {
+			double avg = model.calculateStudentCurAverage(studentUsername);
+			System.out.println("Student " + studentUsername + " average: " + avg);
+		} else {
+			System.out.println("Student does not exist in this course");
+		}
+		
 	}
 	
-	public static void addStudent(Model model, String username, Scanner scanner) {
+	public static void addStudent(Model model, String username, Scanner scanner, String courseName) {
 		System.out.println("Student Username: "); // username is not what we want btw, but might be used l8r
 		String choiceName = scanner.nextLine().strip();
-		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
-		String choiceCourse = scanner.nextLine().strip();
-		System.out.println(model.addStudent(choiceName, choiceCourse));
+		System.out.println(model.addStudent(choiceName, courseName));
 	}
 	
-	public static void removeStudent(Model model, String username, Scanner scanner) {
+	public static void removeStudent(Model model, String username, Scanner scanner, String courseName) {
 		System.out.println("Student Username: "); // username is not what we want btw, but might be used l8r
 		String choiceName = scanner.nextLine().strip();
-		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
-		String choiceCourse = scanner.nextLine().strip();
-		System.out.println(model.removeStudent(choiceName, choiceCourse));
+		System.out.println(model.removeStudent(choiceName, courseName));
 	}
 	
-	public static void viewStudentsEnrolled(Model model, String username, Scanner scanner) {
-		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
-		String choiceCourse = scanner.nextLine().strip();
-		System.out.println(model.getEnrolledStudents(choiceCourse));
-	}
-	
-	public static void importStudents(Model model, String username, Scanner scanner) {
-		System.out.println("Course name: "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
-		String choiceCourse = scanner.nextLine().strip();
-		System.out.println("File Name (exclude .txt): "); // This is using PARAMETER method. Delete this comment if it becomes irrelevant.
-		String choiceFileName = scanner.nextLine().strip() + ".txt";
-		model.importStudentList(choiceCourse, choiceFileName);
+	public static void viewStudentsEnrolled(Model model, String username, String courseName) {
+		System.out.println(model.getEnrolledStudents(courseName));
 	}
 
 }

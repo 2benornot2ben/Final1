@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class Database {
 	private HashMap<String, User> accountList;
 	@JsonIgnore
-	private HashMap<String, Assignment> assignmentMap; // Still unconvinced about this one...
-	@JsonIgnore
 	private HashMap<String, Student> studentMap;
 	@JsonIgnore
 	private HashMap<String, Teacher> teacherMap;
@@ -32,7 +30,6 @@ public class Database {
 	
 	public Database(AccountStorage storage) throws FileNotFoundException {
 		accountList = new HashMap<String, User>();
-		assignmentMap = new HashMap<String, Assignment>();
 		studentMap = new HashMap<String, Student>();
 		teacherMap = new HashMap<String, Teacher>();
 		courseMap = new HashMap<String, Course>();
@@ -176,7 +173,6 @@ public class Database {
 	
 	// To be ran after a json makes this...
 	public void updateUnpacking(AccountStorage storage) {
-		assignmentMap = new HashMap<String, Assignment>();
 		studentMap = new HashMap<String, Student>();
 		teacherMap = new HashMap<String, Teacher>();
 		fileNames = new ArrayList<String>();
