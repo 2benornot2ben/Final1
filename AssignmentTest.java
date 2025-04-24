@@ -2,6 +2,9 @@ package backend;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.junit.Test;
 
 public class AssignmentTest {
@@ -9,6 +12,12 @@ public class AssignmentTest {
 	@Test
 	public void test() {
 		Assignment a = new Assignment("syllabus_quiz", AssignmentType.QUIZ);
+		ArrayList<Double> grades = new ArrayList<>();
+        grades.add(90.0);
+        HashMap<String, Double> idToGrade = new HashMap<>();
+        idToGrade.put("dlee", 10.0);
+        idToGrade.put("Fatih", null);
+        a.setidToGrade(idToGrade);
 		a.getAllGrades();
 		a.getAssignmentName();
 		a.getIdToGrade();
@@ -21,6 +30,8 @@ public class AssignmentTest {
 		a.setMaxGrade(0);
 		a.getType();
 		
+        
+        
 		
 		
 		a.setidToGrade(null);
@@ -28,6 +39,7 @@ public class AssignmentTest {
 		a.setGraded(false);
 		Assignment aCopy = new Assignment();
 		
+//		
 		// a.getStudentGradeExists("dlee");
 	}
 
