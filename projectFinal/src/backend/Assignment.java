@@ -87,22 +87,22 @@ public class Assignment {
 	// JSON METHODS
 	// As in, we don't use these, but the json needs them to exist..
 	
-	private Assignment() {
+	protected Assignment() {
 		idToGrade = new HashMap<String, Double>();
 	};
 	
 	@JsonSetter
-	private void setidToGrade(HashMap<String, Double> idToGrade) {
+	protected void setidToGrade(HashMap<String, Double> idToGrade) {
 		this.idToGrade = idToGrade;
 	}
 	
 	@JsonSetter
-	private void setGraded(boolean graded) {
+	protected void setGraded(boolean graded) {
 		this.graded = graded;
 	}
 	
 	@JsonSetter
-	private void setAssignmentName(String assignmentName) {
+	protected void setAssignmentName(String assignmentName) {
 		this.assignmentName = assignmentName;
 	}
 }

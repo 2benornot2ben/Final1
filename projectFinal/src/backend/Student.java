@@ -1,3 +1,11 @@
+/**************************************************************
+ * Author: Davranbek Kadirimbetov, Benjamin Kanter,
+ * 		   Fatih Bozdogan, & Behruz Ernazarov
+ * Description: Simulates a student! Students are complicated,
+ * as they want their firstname and last name. They also need
+ * grades, and just about every way to interact with them.
+ **************************************************************/
+
 package backend;
 
 import java.util.HashMap;
@@ -6,17 +14,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class Student extends User {
+	/* Students! This stores a student, which is most of
+	 * the bulk of the program, when it grows big (Small programs
+	 * mostly have bulk in assignments). Students need to store
+	 * a fair amount of information in order to have it readily
+	 * accessible without upending the entire program every time
+	 * we want to get a grade. */
 	private String firstName;
 	private String lastName;
-	private HashMap<String, Double> studentAverageGrades; // This should be all the current coureses
+	private HashMap<String, Double> studentAverageGrades; // This should be all the current courses
 	private HashMap<String, FinalGrade> studentGradeLetters; // This should be the past courses
-
-	// if a letter grade is not assigned, it should be a cur course
-	// if a letter grade is assigned, it should be a past course
-
-
 	
 	public Student(String first, String last, String user) {
+		/* Basic constructor, sets the names, initializes the hashmaps. */
 		super(user);
 		this.firstName = first;
 		this.lastName = last;
@@ -33,6 +43,7 @@ public class Student extends User {
 	}
 	
 	protected void updateStudentGradeLetters(String courseName, FinalGrade letter) {
+		/* Not to be confused with setStudentGradeLetters, this just adds 1 grade. */
 		studentGradeLetters.put(courseName, letter);
 	}
 	
@@ -97,12 +108,12 @@ public class Student extends User {
 	private Student() {};
 	
 	@JsonSetter
-	private void setStudentAverageGrades(HashMap<String, Double> studentAverageGrades ) {
+	protected void setStudentAverageGrades(HashMap<String, Double> studentAverageGrades ) {
 		this.studentAverageGrades = studentAverageGrades;
 	}
 	
 	@JsonSetter
-	private void setStudentGradeLetters(HashMap<String, FinalGrade> studentGradeLetters) {
+	protected void setStudentGradeLetters(HashMap<String, FinalGrade> studentGradeLetters) {
 		this.studentGradeLetters = studentGradeLetters;
 	}
 }
