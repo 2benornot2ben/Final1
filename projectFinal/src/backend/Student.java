@@ -9,8 +9,7 @@ public class Student extends User {
 	private String firstName;
 	private String lastName;
 	private HashMap<String, Double> studentAverageGrades; // This should be all the current coureses
-	private enum Grades {A, B, C, D, E, F};
-	private HashMap<String, Grades> studentGradeLetters; // This should be the past courses
+	private HashMap<String, FinalGrade> studentGradeLetters; // This should be the past courses
 
 	// if a letter grade is not assigned, it should be a cur course
 	// if a letter grade is assigned, it should be a past course
@@ -21,6 +20,8 @@ public class Student extends User {
 		super(user);
 		this.firstName = first;
 		this.lastName = last;
+		studentAverageGrades = new HashMap<String, Double>();
+		studentGradeLetters = new HashMap<String, FinalGrade>();
 	}
 	
 	public String getFirstName(){
@@ -30,20 +31,33 @@ public class Student extends User {
 	public String getLastName() {
 		return lastName;
 	}
+	
+	protected void updateStudentGradeLetters(String courseName, FinalGrade letter) {
+		studentGradeLetters.put(courseName, letter);
+	}
+	
+	protected void updateStudentAverageGrades(String courseName, Double grade) {
+		if(studentAverageGrades.containsKey(courseName)) {
+			studentAverageGrades.put(courseName, studentAverageGrades.get(courseName) + grade); 
+		} else {
+			studentAverageGrades.put(courseName, grade);
+		}
+	}
+	
 	public double calculateGPA() {
 		double totalPointsEarned = 0;
-		double totalPointsPossible = 4*courseMap.size();
+		double totalPointsPossible = courseMap.size();
 		for (String key : studentGradeLetters.keySet()) {
-			if (studentGradeLetters.get(key) == Grades.A) {
+			if (studentGradeLetters.get(key) == FinalGrade.A) {
 				totalPointsEarned += 4;
 			}
-			else if (studentGradeLetters.get(key) == Grades.B) {
+			else if (studentGradeLetters.get(key) == FinalGrade.B) {
 				totalPointsEarned += 3;
 			}
-			else if (studentGradeLetters.get(key) == Grades.C) {
+			else if (studentGradeLetters.get(key) == FinalGrade.C) {
 				totalPointsEarned += 2;
 			}
-			else if (studentGradeLetters.get(key) == Grades.D) {
+			else if (studentGradeLetters.get(key) == FinalGrade.D) {
 				totalPointsEarned += 1;
 			}
 		}
@@ -52,7 +66,7 @@ public class Student extends User {
 
 	@JsonIgnore
 	public double getCourseAverage(String courseName) {
-		return courseMap.get(courseName).getCourseAverage();
+		return this.calculateCurAverage();
 	}
 
 	public double calculateCurAverage() {
@@ -88,7 +102,7 @@ public class Student extends User {
 	}
 	
 	@JsonSetter
-	private void setStudentGradeLetters(HashMap<String, Grades> studentGradeLetters) {
+	private void setStudentGradeLetters(HashMap<String, FinalGrade> studentGradeLetters) {
 		this.studentGradeLetters = studentGradeLetters;
 	}
 }

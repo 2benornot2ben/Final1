@@ -51,8 +51,8 @@ public class Model {
 		fullCourseMap.get(courseName).setGraded(assignment);
 	}
 	
-	public double getCourseAverage(String courseName) {
-		return fullCourseMap.get(courseName).getCourseAverage();
+	public double getCourseAverage(String courseName, String stu) {
+		return fullCourseMap.get(courseName).getCourseAverage(stu);
 	}
 	
 	public double calculateGPA(String studentUsername) {
@@ -87,6 +87,13 @@ public class Model {
 		return teacherMap.get(teacherUsername).getCompletedCourses();
 	}
 
+	public boolean canCalculateStudentCurAverage(String course, String stu) {
+		if(fullCourseMap.get(course).getStudentMap().contains(stu)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/*
 	 *  All the methods are void right now, but if they return something change it to something`s type.
 	 *  This might not be final layout
@@ -124,7 +131,6 @@ public class Model {
 	public String removeStudent(String username, String coursename) {
 		// for teachers
 		// removes a student from a course
-		System.out.println(fullCourseMap);
 		Course course = fullCourseMap.get(coursename);
 		Student student = studentMap.get(username);
 		if (course == null) return ("Course not found.");
@@ -158,7 +164,7 @@ public class Model {
 		
 	}
 	
-	public String addGradeForAssignment(String stuNameHolder, String assignNameHolder, double gradeNumHolderDoub, Scanner scanner, String courseName) {
+	public String addGradeForAssignment(String stuNameHolder, String assignNameHolder, double gradeNumHolderDoub, String courseName) {
 		Student stu = studentMap.get(stuNameHolder);
 		if (stu == null) return "Student does not exist!";
 		Course course = fullCourseMap.get(courseName);
@@ -166,7 +172,7 @@ public class Model {
 		if (!(stu.getCurCourses().contains(course))) return "Student not in course!";
 		Assignment assign = course.getAssignmentsMap().get(assignNameHolder);
 		if (assign == null) return "Assignment does not exist!";
-		assign.gradeStudent(stu, gradeNumHolderDoub);
+		assign.gradeStudent(courseName,stu, gradeNumHolderDoub);
 		return "Done!";
 	}
 	
@@ -338,7 +344,7 @@ public class Model {
 	    return groupMap;
 	}
 	
-	public void assignFinalGrade(String courseName) {
+	public ArrayList<String> assignFinalGrade(String courseName) {
 		Course course = fullCourseMap.get(courseName);
 		ArrayList<Double> weights = course.getWeights();
 		ArrayList<Integer> drops = course.getDrops();
@@ -357,11 +363,55 @@ public class Model {
 			}
 			for(String j : tempGrades.keySet()) {
 				double tempTotal = tempGrades.get(j) / fullCourseMap.get(courseName).getTotalGrade() * 100;
-				System.out.println(fullCourseMap.get(courseName).getTotalGrade() + ": " + tempTotal + " | "+tempGrades.get(j));
 				finalGrades.put(j, this.calculateGrade(tempTotal));
 			}
-			System.out.println(finalGrades);
+		} else {
+			HashMap<AssignmentType, ArrayList<Assignment>> tempAssignments = new HashMap<>();
+		    for (AssignmentType type : AssignmentType.values()) {
+		        tempAssignments.put(type, course.getAssignmentByType(type));
+		    }
+		    HashSet<String> allStudentIds = new HashSet<>();
+		    for (Assignment assignment : assignmentMap.values()) {
+		        allStudentIds.addAll(assignment.getIdToGrade().keySet());
+		    }
+
+		    for (String stu : allStudentIds) {
+		        double finalGrade = 0;
+		        for (AssignmentType type : AssignmentType.values()) {
+		            ArrayList<Assignment> assignments = tempAssignments.get(type);
+		            ArrayList<Double> tempGrade = new ArrayList<>();
+		            for (Assignment assignment : assignments) {
+		                tempGrade.add(assignment.getIdToGrade().get(stu));
+		            }
+		            int drop = drops.get(type.ordinal());
+		            Collections.sort(tempGrade);
+		            while (drop > 0 && tempGrade.size() != 0) {
+		            	tempGrade.remove(0);
+		            	drop--;
+		            }
+		            double total = 0.0;
+		            for (int i = 0; i < tempGrade.size(); i++) {
+		                total += tempGrade.get(i);
+		            }
+		            if (tempGrade.size() > 0) {
+		            	total /= tempGrade.size();
+		            }
+		            double weight = weights.get(type.ordinal());
+		            finalGrade += total * weight / 100.0;
+		        }
+		        finalGrades.put(stu, this.calculateGrade(finalGrade));
+		    }
 		}
+		for(String stu : finalGrades.keySet()) {
+			studentMap.get(stu).updateStudentGradeLetters(courseName, finalGrades.get(stu));
+		}
+		ArrayList<String> finals = new ArrayList<String>();
+		for(String stu : finalGrades.keySet()) {
+			String temp = "" + stu + " " +  finalGrades.get(stu);
+			finals.add(temp);
+			temp = "";
+		}
+		return finals;
 	}
 	
 	public void calculateClassAverage(int option, String courseName, ArrayList<Double> weights, ArrayList<Integer> drops) {
@@ -397,6 +447,9 @@ public class Model {
 				// What's this?
 				// We'll assume 0 is "not set up" btw.
 			}
+			fullCourseMap.get(courseName).setModeChosen(2);
+			fullCourseMap.get(courseName).setDrop(drops);
+			fullCourseMap.get(courseName).setWeight(weights);
 		}
 	}
 	
@@ -425,27 +478,6 @@ public class Model {
 		catch(IOException e){
 			e.printStackTrace();
 		}
-	}
-
-	public String importStudentList(String courseName, String filename) {
-		Course course = fullCourseMap.get(courseName);
-		if (course == null) return ("Course not found.");
-		HashSet<String> studentUsernameList = new HashSet<String>();
-		try (Scanner scanLine = new Scanner(new File(filename))){
-			while(scanLine.hasNextLine()){
-				// format we get filenames from
-				String line = scanLine.nextLine();
-				studentUsernameList.add(line);
-			}
-			scanLine.close();
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-		for (String i: studentUsernameList) {
-			addStudent(courseName, i);
-		}
-		return ("Student(s) added!");
 	}
 	
 	// This function should be called on just about everything.

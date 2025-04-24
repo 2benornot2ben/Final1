@@ -73,6 +73,16 @@ public class Course {
 		this.teacher = teacher;
 	}
 	
+	protected ArrayList<Assignment> getAssignmentByType(AssignmentType type){
+		ArrayList<Assignment> temp = new ArrayList<Assignment>();
+		for(Assignment a : assignmentMap.values()) {
+			if(a.getType() == type) {
+				temp.add(a);
+			}
+		}
+		return temp;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -154,12 +164,8 @@ public class Course {
 	}
 
 	@JsonIgnore
-	public double getCourseAverage() {
-		double totalAvg = 0;
-		for (String key : studentMap.keySet()) {
-			totalAvg += studentMap.get(key).getStudentAverage(courseName);
-		}
-		return totalAvg / studentMap.size();
+	public double getCourseAverage(String stu) {
+		return studentMap.get(stu).getCourseAverage(stu);
 	}
 	
 	@JsonIgnore
@@ -247,6 +253,14 @@ public class Course {
 	
 	protected void setModeChosen(int modeChosen) {
 		this.modeChosen = modeChosen;
+	}
+	
+	protected void setDrop(ArrayList<Integer> drops) {
+		this.drops = drops;
+	}
+	
+	protected void setWeight(ArrayList<Double> weights) {
+		this.weights = weights;
 	}
 	
 	protected ArrayList<Double> getWeights() {
