@@ -1,3 +1,16 @@
+/**************************************************************
+ * Author: Davranbek Kadirimbetov, Benjamin Kanter,
+ * 		   Fatih Bozdogan, & Behruz Ernazarov
+ * Description: Represents a course in java form!
+ * Contains a lot of relevant information, like assignments,
+ * students, total grades, weights, drops, etc.
+ * Interestingly, this is the only class (apart from database)
+ * that you'll see holding other classes in the json - it hold assignments.
+ * Why? Because nothing else points to assignments, so we can assume
+ * no duplicating will happen, and assignments point to nothing,
+ * so there's no infinity mirror issue.
+ **************************************************************/
+
 package backend;
 
 import java.util.ArrayList;
@@ -10,29 +23,36 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class Course {
-	private HashMap<String, Assignment> assignmentMap; // I don't think we need the hash of the assignment. Each assignment has a unique name.
+	/* A course object, representing everything in a class!
+	 * Like a programming class or.. Whatever! It's the google classroom of
+	 * random java projects! Also stores a lot of info. */
+	private HashMap<String, Assignment> assignmentMap; // Every assignment has a unique name in each course (but not necessarily across courses)
 	private String courseName;
 	@JsonIgnore
-	private Teacher teacher; // Comment: Should each course have a teacher?
+	private Teacher teacher;
 	@JsonIgnore
 	private HashMap<String, Student> studentMap; // The string is the username
-	private Boolean completed;
+	private Boolean completed; // If the course is done, basically.
 	private double totalGrade;
 	private HashMap<AssignmentType,Double> categories; // Assignment Type : Weight of that
 	private int modeChosen = 0;
-	private ArrayList<Double> weights;
-	private ArrayList<Integer> drops;
+	private ArrayList<Double> weights; // The position in the arraylist determines where it applies
+	private ArrayList<Integer> drops; // Drops can only apply to 3 of the categories
 	
 	// This is for the json to use.
 	private String teacherPacked; // Teacher username
 	private ArrayList<String> studentPacked; // Student usernames
 	
 	public Course(String courseName) {
+		/* Not so standard constructor. Only needs the course name, the rest
+		 * of the stuff set here is practically the "default" values. Remember
+		 * that the json uses a different method for loading, so this is okay. */
 		this.completed = false;
 		this.courseName = courseName;
 		assignmentMap = new HashMap<String, Assignment>();
 		studentMap = new HashMap<String, Student>();
 		categories = new HashMap<>();
+		// Standard grade distribution, changeable though.
         categories.put(AssignmentType.MIDTERM, 300.0);
         categories.put(AssignmentType.FINAL,   200.0);
         categories.put(AssignmentType.QUIZ,    125.0);
@@ -64,8 +84,11 @@ public class Course {
 	}
 	
 	protected ArrayList<Assignment> getAssignmentByType(AssignmentType type){
+		/* This method, when given a type, gives you every assignment of that type.
+		 * Handy for categorically sorting & certain instructions. */
 		ArrayList<Assignment> temp = new ArrayList<Assignment>();
 		for(Assignment a : assignmentMap.values()) {
+			// Note we need the values, the keys are just strings.
 			if(a.getType() == type) {
 				temp.add(a);
 			}
@@ -75,6 +98,9 @@ public class Course {
 	
 	@Override
 	public boolean equals(Object obj) {
+		/* A equals method, only checking if they have the same name. Interestingly,
+		 * this ALSO accepts as being equal to a string (ie: String equals Coursename).
+		 * Actually pretty convenient. */
 		if (this == obj) return true;
 		// Check if it's a COURSE or STRING
 	    if (obj == null || (getClass() != obj.getClass() && !(obj instanceof String))) return false;
@@ -98,11 +124,11 @@ public class Course {
 		return completed;
 	}
 	
-	// this is absolutely an encapsulation issue
 	public HashSet<String> getGradedAssignments() {
-		// go over the assignemtns and check if the assignment is graded
-		// if so add it to the hashset
-		// return the hashset
+		/* Goes over the assignments, and checks if they're graded.
+		 * If they are? Add it to the return set.
+		 * Note that we return assignment names, and because they're unique,
+		 * a hash set is okay. */
 		HashSet<String> gradedAssignments = new HashSet<String>();
 		for (String key : assignmentMap.keySet()) {
 			if (assignmentMap.get(key).isGraded()) {
@@ -113,10 +139,15 @@ public class Course {
 	}
 	
 	protected void completeCourse() {
+		// There is no "uncomplete course", as that makes no sense.
 		this.completed = true;
 	}
 	
 	public HashSet<String> getUngradedAssignments() {
+		/* Goes over the assignments, and checks if they're ungraded.
+		 * If they are? Add it to the return set.
+		 * Note that we return assignment names, and because they're unique,
+		 * a hash set is okay. */
 		HashSet<String> ungradedAssignments = new HashSet<String>();
 		for (String key : assignmentMap.keySet()) {
 			if (!assignmentMap.get(key).isGraded()) {
@@ -127,13 +158,15 @@ public class Course {
 	}
 	
 	protected void setGraded(String assignment) {
+		// Sets an assignment object as graded. Again, there is no ungraded setter.
 		assignmentMap.get(assignment).graded();
 	}
 	
 	public HashSet<String> getGradedAssignmentsUSER(String username) {
-		// go over the assignemtns and check if the assignment is graded
-		// if so add it to the hashset
-		// return the hashset
+		/* Same as the previous one, but this time, we care about
+		 * the USER. Goes over THEIR assignments in the course, and 
+		 * returns if THEIR grade exists, not just if the entire
+		 * course is graded. */
 		HashSet<String> gradedAssignments = new HashSet<String>();
 		for (String key : assignmentMap.keySet()) {
 			if ((assignmentMap.get(key).getStudentGradeExists(username))) {
@@ -144,6 +177,10 @@ public class Course {
 	}
 	
 	public HashSet<String> getUngradedAssignmentsUSER(String username) {
+		/* Same as the previous one, but this time, we care about
+		 * the USER. Goes over THEIR assignments in the course, and 
+		 * returns if THEIR grade doesn't exist, not just if the entire
+		 * course is ungraded. */
 		HashSet<String> ungradedAssignments = new HashSet<String>();
 		for (String key : assignmentMap.keySet()) {
 			if (!(assignmentMap.get(key).getStudentGradeExists(username))) {
@@ -162,14 +199,10 @@ public class Course {
 	protected HashMap<String, Assignment> getAssignmentsMap(){
 		return new HashMap<String, Assignment>(this.assignmentMap);
 	}
-  
-  /*
-	 * UPDATE: Behruz
-	 * -  created to return student objects from studentMap
-	 * to use them for sorting in Model.java
-	 * */
 	
 	protected ArrayList<Student> getStudentMap(){
+		/* This tries to avoid giving a hashmap, since where it's used
+		 * would be inconvenient if it was. */
 		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
 		for(Student student : studentMap.values()) {
 			copyStudentMap.add(student);
@@ -179,6 +212,8 @@ public class Course {
 	}
 	
 	public ArrayList<Double> getGradesForAssignment(String assignmentName) {
+		/* Returns assignment grades. Also handles the case of the assignment
+		 * not existing, in which it obviously could not be graded. */
         Assignment assignment = assignmentMap.get(assignmentName);
         if (assignment == null) {
             return new ArrayList<>();
@@ -187,6 +222,8 @@ public class Course {
     }
 	
 	public Double getStudentGrade(String username, String assignmentName) {
+		/* Returns assignment grade for a student. Also handles the case of the assignment
+		 * not existing, in which it obviously could not be graded. */
         Assignment assignment = assignmentMap.get(assignmentName);
         if (assignment == null) {
             return null;
@@ -194,10 +231,9 @@ public class Course {
         return assignment.getStudentGrade(username);
     }
 	
-	
-	// END Behruz
-	
 	protected boolean addStudent(Student student) {
+		/* Adds a student to the course! Also updates the student
+		 * itself to have the course, and then returns if they were already in it. */
 		String stuUser = student.getUsername();
 		if (studentMap.containsKey(stuUser)) return false;
 		studentMap.put(stuUser, student);
@@ -205,13 +241,16 @@ public class Course {
 	}
 	
 	protected boolean removeStudent(Student student) {
-		String stuUser = student.getUsername(); // This could be made to just use a string if necessary.
+		/* Removes a student to from course! Also updates the student
+		 * itself to remove the course, and then returns if they were even in it. */
+		String stuUser = student.getUsername();
 		if (!(studentMap.containsKey(stuUser))) return false;
 		studentMap.remove(stuUser);
 		return true;
 	}
 	
 	protected Iterator<Student> getEnrolledStudents() {
+		// A nice iterator for enrolled students, for more sane usage.
 		return studentMap.values().iterator();
 	}
 	
@@ -220,21 +259,21 @@ public class Course {
 	}
 	
 	public boolean isEnrolled(Student student) {
+		/* Returns if a student is in the course. */
 		return studentMap.containsKey(student.getUsername());
 	}
-
-	// public double getStudentAverage(String studentUsername) {
-	// 	return studentMap.get(studentUsername).getStudentAverage(courseName);
-	// }
 	
 	public void addAssignment(String assignmentName, String assignmentCategory) {
+		/* Adds a new assignment, made by itself, only with the name & a category as a string.
+		 * Figures out the category based on the string, then makes the new assignment itself. */
 		Assignment newAssignment = new Assignment(assignmentName,this.convertToEnums(assignmentCategory));
 		newAssignment.setType(this.convertToEnums(assignmentCategory));
 		assignmentMap.put(assignmentName, newAssignment);
 	}
 	
-	public void removeAssignment(String assignmentName, String assignmentCategory) {
-		assignmentMap.remove(assignmentName);
+	public boolean removeAssignment(String assignmentName) {
+		/* Removes an assignment based on it's name. Remember: Assignment names in each course are unique. */
+		return (assignmentMap.remove(assignmentName) != null);
 	}
 	
 	protected int getModeChosen() {
@@ -262,6 +301,9 @@ public class Course {
 	}
 	
 	private AssignmentType convertToEnums(String category) {
+		/* Figures out the enum based on a string. Practically just
+		 * matches it to the enum text, and returns what lines up. */
+		// We use toLowerCase() for convenience
         switch (category.toLowerCase()) {
 	        case "midterm":
 	            return AssignmentType.MIDTERM;
@@ -278,13 +320,15 @@ public class Course {
         }
 	}
 	
-	
-	
-	
 	// JSON RELATED METHODS
-	// As in, if you're using it for anything other than that, hell are you doing?
+	// As in, if you're using it for anything other than that, what are you doing?
 	
 	protected void packUpReferences() {
+		/* Packs up the course to exporting to a json file. We have to do this
+		 * because certain elements in here (ie: anything related to other objects) risk
+		 * making an infinity mirror or copies if we don't. I suppose this could be considered
+		 * "upcasting"? Still, it's reconstructable in unPackReferences, due to hashmaps enforcing
+		 * no duplicates, which is very, very convenient. */
 		studentPacked = new ArrayList<String>();
 		teacherPacked = teacher.getUsername();
 		for (Student i : studentMap.values()) studentPacked.add(i.getUsername());
@@ -292,10 +336,12 @@ public class Course {
 	
 	// This should be called once on startup. That's it.
 	protected void unPackReferences(HashMap<String, Student> studentMaps, HashMap<String, Teacher> teacherMaps) {
+		/* Takes the vars made in packUpReferences and turns them back into the more
+		 * usable versions. Because we have convenient spots of no duplicates, we can accurately recreate
+		 * the students & teachers with just their usernames. */
 		for (String i : studentPacked) {
 			this.studentMap.put(i, studentMaps.get(i));
 		}
-		ArrayList<Student> holdStudentRefs = new ArrayList<Student>();
 		teacher = teacherMaps.get(teacherPacked);
 	}
 	

@@ -1,3 +1,12 @@
+/**************************************************************
+ * Author: Davranbek Kadirimbetov, Benjamin Kanter,
+ * 		   Fatih Bozdogan, & Behruz Ernazarov
+ * Description: The model which contains... A decent lot of info!
+ * Interestingly, it is NOT saved when you export to json. Still,
+ * this is what's called from the view to do most every one of
+ * it's functions.
+ **************************************************************/
+
 package backend;
 
 import java.util.ArrayList;
@@ -6,21 +15,23 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Scanner;
-import java.io.File;
-import java.io.IOException;
 
 public class Model {
+	/* What the view uses to interact with the back end!
+	 * Note that every variable here is regrettable with the database,
+	 * so this doesn't need to be saved when exporting to json. */
 
-	// this represesnts all the courses.
+	// this represents all the courses.
 	private HashMap<String, Course> fullCourseMap;	// str is the course name.
 	private HashMap<String, Student> studentMap; // str is the username
 	private HashMap<String, Teacher> teacherMap; // str is the username
 	private User personUsing;
 	
 	
-	// definetely needs a parameter but i dont know yet.
 	public Model(Database database, User person) {
+		/* Initializes the model! Evidentally, just uses
+		 * the database to get it's information, aswell as a person
+		 * for whoever's using it. */
 		fullCourseMap = database.getCourseMap();
 		studentMap = database.getStudentMap();
 		teacherMap = database.getTeacherMap();
@@ -29,16 +40,20 @@ public class Model {
 	
 	// STUDENT METHODS 
 	public HashSet<String> getGradedAssignmentsUSER(String courseName, String studentUsername) {
+		/* Gives a hashset of graded assignment names, for a student in a course. */
 		Course course = fullCourseMap.get(courseName);
-		return course.getGradedAssignmentsUSER(studentUsername); // I believe no escaping reference here but could someone please confirm?
+		return course.getGradedAssignmentsUSER(studentUsername);
 	}
 	
 	public HashSet<String> getUngradedAssignmentsUSER(String courseName, String studentUsername) {
+		/* Gives a hashset of ungraded assignment names, for a student in a course. */
 		Course course = fullCourseMap.get(courseName);
 		return course.getUngradedAssignmentsUSER(studentUsername); // I believe no escaping reference here but could someone please confirm?
 	}
 	
-	public ArrayList<String> getStudentList(String courseName){
+	public ArrayList<String> getStudentList(String courseName) {
+		/* Gives an arraylist of the student list in a course.
+		 * More specifically, their usernames. */
 		ArrayList<Student> students = fullCourseMap.get(courseName).getStudentMap();
 		ArrayList<String> studentUsernames = new ArrayList<String>();
 		for(Student s: students) {
@@ -48,70 +63,77 @@ public class Model {
 	}
 	
 	public void setAssignmentGraded(String courseName, String assignment) {
+		/* Sets an assignment to "graded". Basically a statement saying that all grades are in for it. */
 		fullCourseMap.get(courseName).setGraded(assignment);
 	}
 	
 	public double getCourseAverage(String courseName, String stu) {
+		/* Returns the average of a student in a course. */
 		return fullCourseMap.get(courseName).getCourseAverage(stu);
 	}
 	
 	public double calculateGPA(String studentUsername) {
+		/* Returns the GPA of a student. */
 		Student student = studentMap.get(studentUsername);
 		return student.calculateGPA();
 	}
 
 	public ArrayList<String> getCurCoursesStudent(String studentUsername) {
+		/* Returns the course names that a student is in. */
 		return studentMap.get(studentUsername).getCurCourses();
 	}
 
 	public ArrayList<String> getCompletedCoursesStudent(String studentUsername) {
+		/* Returns the course names of completed courses that the student was in. */
 		return studentMap.get(studentUsername).getCompletedCourses();
 	}
 
 	// TEACHER METHODS
 	public HashSet<String> getGradedAssignments(String courseName) {
+		/* Returns every assignment in a course that was marked as graded. */
 		Course course = fullCourseMap.get(courseName);
-		return course.getGradedAssignments(); // I believe no escaping reference here but could someone please confirm?
+		return course.getGradedAssignments();
 	}
 	
 	public HashSet<String> getUngradedAssignments(String courseName) {
+		/* Returns every assignment in a course not marked as graded. */
 		Course course = fullCourseMap.get(courseName);
-		return course.getUngradedAssignments(); // I believe no escaping reference here but could someone please confirm?
+		return course.getUngradedAssignments();
 	}
 	
 	public ArrayList<String> getCurCoursesTeacher(String teacherUsername) {
+		/* Returns every course that a teacher is in. */
 		return teacherMap.get(teacherUsername).getCurCourses();
 	}
 
 	public ArrayList<String> getCompletedCoursesTeacher(String teacherUsername) {
+		/* Returns every course that a teacher had completed. */
 		return teacherMap.get(teacherUsername).getCompletedCourses();
 	}
 
 	public boolean canCalculateStudentCurAverage(String course, String stu) {
-		if(fullCourseMap.get(course).getStudentMap().contains(stu)) {
+		/* Checks if a student is in a course, even if the name is a little on the nose */
+		if(fullCourseMap.get(course).getStudentMap().contains(studentMap.get(stu))) {
 			return true;
 		}
 		return false;
 	}
 
 	public void addAssignment(String courseName, String assignmentName, String assignmentCategory) {
+		/* Adds an assignment to a course. Needs the name and catagory. */
 		fullCourseMap.get(courseName).addAssignment(assignmentName, assignmentCategory);
 		ArrayList<Double> weights = fullCourseMap.get(courseName).getWeights();
 		ArrayList<Integer> drops = fullCourseMap.get(courseName).getDrops();
 		this.calculateClassAverage(fullCourseMap.get(courseName).getModeChosen(), courseName, weights, drops);
 	}
 	
-	public void removeAssignment(String courseName, String assignmentName, String assignmentCategory) {
-		fullCourseMap.get(courseName).removeAssignment(assignmentName, assignmentCategory);
-		// for teachers
-		// removes an assignment from a course
-		
-		// assignment, course should come as a parameter (ig)
+	public boolean removeAssignment(String courseName, String assignmentName) {
+		/* removes an assignment from a course. Just needs the name. */
+		return fullCourseMap.get(courseName).removeAssignment(assignmentName);
 	}
 	
 	public String addStudent(String username, String coursename) {
-		// for teachers
-		// adds a student to a course
+		/* Adds a student to a course. Has a lot of error handling. */
 		Course course = fullCourseMap.get(coursename);
 		Student student = studentMap.get(username);
 		if (course == null) return ("Course not found.");
@@ -124,8 +146,7 @@ public class Model {
 	}
 	
 	public String removeStudent(String username, String coursename) {
-		// for teachers
-		// removes a student from a course
+		/* Removes a student from a course. Also has a lot of error handling. */
 		Course course = fullCourseMap.get(coursename);
 		Student student = studentMap.get(username);
 		if (course == null) return ("Course not found.");
@@ -138,10 +159,10 @@ public class Model {
 	}
 	
 	public String getEnrolledStudents(String coursename) {
-		// for teachers
-		// returns student list who are enrolled in a course
+		/* Returns a string of all enrolled students in a course. */
 		Course course = fullCourseMap.get(coursename);
 		if (course == null) return ("Course not found.");
+		// Uses an iterator
 		Iterator<Student> studentIter = course.getEnrolledStudents();
 		String holdFormat = "";
 		while (studentIter.hasNext()) {
@@ -153,6 +174,7 @@ public class Model {
 	}
 	
 	public String addGradeForAssignment(String stuNameHolder, String assignNameHolder, double gradeNumHolderDoub, String courseName) {
+		/* Adds a grade to a student for an assignment. Checks to make sure it's valid before doing so. */
 		Student stu = studentMap.get(stuNameHolder);
 		if (stu == null) return "Student does not exist!";
 		Course course = fullCourseMap.get(courseName);
@@ -165,13 +187,9 @@ public class Model {
 	}
 	
 	public String calculateStats(String courseName, String assignmentName) {
- 		// for teachers
- 		// calculates the averages and the medians on assignment 
- 		// returns a String message e.g. "Average on Project1 is 98% and median is 97%"
- 
- 		// assignment, course should come as a parameter (ig)
- 
- 		Course course = fullCourseMap.get(courseName);
+ 		 /* Calculates the averages and medians on an assignment.
+ 		  * Also makes sure it's a valid check. */
+		 Course course = fullCourseMap.get(courseName);
          if (course == null) {
              return "Course not found.";
          }
@@ -180,6 +198,7 @@ public class Model {
              return "Assignment not found.";
          }
          ArrayList<Double> grades = course.getGradesForAssignment(assignmentName);
+         // This only looks for the existing grades
          if (grades.isEmpty()) {
              return "No grades available for " + assignmentName + ".";
          }
@@ -197,6 +216,7 @@ public class Model {
          double median;
          int size = grades.size();
          if (size % 2 == 0) {
+        	 // Proper way of getting a median in an even length list
              median = (grades.get(size / 2 - 1) + grades.get(size / 2)) / 2.0;
          } else {
              median = grades.get(size / 2);
@@ -207,14 +227,12 @@ public class Model {
  	}
 	
 	public double calculateStudentCurAverage(String studentUsername) {
+		/* Return's a student's current average across courses. */
 		return studentMap.get(studentUsername).calculateCurAverage();
 	}
 	
-	/*
-	 * There are 4 sorts and each has a separate method. We can simplify it and make it as one method.
-	 */
-	
 	public ArrayList<Student> sortByFirstName(String courseName) {
+		/* Returns an arraylist of okay no what pardon exucse me what the f*/
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
 			return null;
@@ -249,6 +267,7 @@ public class Model {
 	}
 	
 	public boolean checkCompleted(String courseName) {
+		/* Returns if a course is completed or not. */
 		if(this.getUngradedAssignments(courseName).size() > 0) {
 			return false;
 		}
@@ -256,10 +275,12 @@ public class Model {
 	}
 	
 	public void completeCourse(String courseName) {
+		/* Marks a course as completed, or at least, tries to. */
 		fullCourseMap.get(courseName).completeCourse();
 	}
 	
 	public ArrayList<Student> sortByUserName(String courseName) {
+		// >:C
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
 			return null;
@@ -303,7 +324,9 @@ public class Model {
  	}
 	
 	public Double getStudentGrade(String username, String courseName, String assignmentName) {
+		/* Returns the student's grade on an assignment as a double. */
         Course course = fullCourseMap.get(courseName);
+        // Returns null if it's no good
         if (course == null) {
             return null;
         }
@@ -316,12 +339,12 @@ public class Model {
 	
 	
 	public HashMap<String, ArrayList<String>> putInGroups(String courseName, int num) {
-		// for teachers
-		// creates groups and puts students into them.
-		// return HashMap<String, ArrayList<Student>> String is group name.
+		/* Creates groups and puts students into them.
+		 * Note that the groups are not saved. */
 		ArrayList<Student> studentMap = fullCourseMap.get(courseName).getStudentMap();	
 	    HashMap<String, ArrayList<String>> groupMap = new HashMap<>();
 	    for (int i = 0; i < num; i++) {
+	    	// Every group map starts with this
 	        groupMap.put("Group " + (i + 1), new ArrayList<>());
 	    }
 	    for (int i = 0; i < studentMap.size(); i++) {
@@ -333,6 +356,8 @@ public class Model {
 	}
 	
 	public ArrayList<String> assignFinalGrade(String courseName) {
+		/* Assigns a final grade to a given course.
+		 * Has a lot to cover. */
 		Course course = fullCourseMap.get(courseName);
 		ArrayList<Double> weights = course.getWeights();
 		ArrayList<Integer> drops = course.getDrops();
@@ -340,6 +365,8 @@ public class Model {
 		HashMap<String, Assignment> assignmentMap = course.getAssignmentsMap();
 		HashMap<String, Double> tempGrades = new HashMap<String, Double>();
 		if(course.getModeChosen() == 1) {
+			// First, gets all the grades in an assignment mapped to their students,
+			// in one biggol hashmap. It basically just mashes the grades together.
 			for( Assignment assignment: assignmentMap.values()) {
 				for(String j : assignment.getIdToGrade().keySet()) {
 					if(!tempGrades.containsKey(j)) {
@@ -349,20 +376,24 @@ public class Model {
 					}
 				}
 			}
+			// Then averages them out to get a percentage
 			for(String j : tempGrades.keySet()) {
 				double tempTotal = tempGrades.get(j) / fullCourseMap.get(courseName).getTotalGrade() * 100;
 				finalGrades.put(j, this.calculateGrade(tempTotal));
 			}
 		} else {
+			// Otherwise, it splits them by categories instead.
 			HashMap<AssignmentType, ArrayList<Assignment>> tempAssignments = new HashMap<>();
 		    for (AssignmentType type : AssignmentType.values()) {
 		        tempAssignments.put(type, course.getAssignmentByType(type));
 		    }
+		    // Has to be a bit more careful with what it does.
 		    HashSet<String> allStudentIds = new HashSet<>();
 		    for (Assignment assignment : assignmentMap.values()) {
 		        allStudentIds.addAll(assignment.getIdToGrade().keySet());
 		    }
-
+		    
+		    // Goes by student for this as well.
 		    for (String stu : allStudentIds) {
 		        double finalGrade = 0;
 		        for (AssignmentType type : AssignmentType.values()) {
@@ -373,6 +404,7 @@ public class Model {
 		            }
 		            int drop = drops.get(type.ordinal());
 		            Collections.sort(tempGrade);
+		            // We use the drops after a sort, so it always drops the lowest.
 		            while (drop > 0 && tempGrade.size() != 0) {
 		            	tempGrade.remove(0);
 		            	drop--;
@@ -384,15 +416,18 @@ public class Model {
 		            if (tempGrade.size() > 0) {
 		            	total /= tempGrade.size();
 		            }
+		            // Then we use weight to determine how much it matters
 		            double weight = weights.get(type.ordinal());
 		            finalGrade += total * weight / 100.0;
 		        }
 		        finalGrades.put(stu, this.calculateGrade(finalGrade));
 		    }
 		}
+		// It comes here no matter the path. It then updates every student's grade letters.
 		for(String stu : finalGrades.keySet()) {
 			studentMap.get(stu).updateStudentGradeLetters(courseName, finalGrades.get(stu));
 		}
+		// And returns their final grades to be printed
 		ArrayList<String> finals = new ArrayList<String>();
 		for(String stu : finalGrades.keySet()) {
 			String temp = "" + stu + " " +  finalGrades.get(stu);
@@ -403,6 +438,7 @@ public class Model {
 	}
 	
 	public void calculateClassAverage(int option, String courseName, ArrayList<Double> weights, ArrayList<Integer> drops) {
+		/* Calculate's a class's average in a course. Takes weights and drops aswell. */
 		HashMap<String, Assignment> assignmentMap = fullCourseMap.get(courseName).getAssignmentsMap();
 		if(option == 1) {
 			//Option 1: Final Grade = Total Points Earned/Total Points Possible. Basically, all
@@ -413,6 +449,7 @@ public class Model {
 				typeCount[type] ++;
 			}
 			int[] maxGrades = {150, 200, 0, 0, 0};
+			// (These can very, basically...)
 			if(typeCount[2] != 0) {
 				maxGrades[2] = 200 / typeCount[2];
 			}
@@ -425,18 +462,15 @@ public class Model {
 			for( Assignment assignment: assignmentMap.values()) {
 				int type = assignment.getType().ordinal();
 				assignment.setMaxGrade(maxGrades[type]);
-				System.out.println(assignment.getAssignmentName() + " " + maxGrades[type] );
 			}
-			//more appropriate way needed.
 			fullCourseMap.get(courseName).setTotalGrade(2*maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
-			fullCourseMap.get(courseName).setModeChosen(1); // New line of code here.
+			fullCourseMap.get(courseName).setModeChosen(1);
 			
 		} else {
 			for (Assignment assignment: assignmentMap.values()) {
 				assignment.setMaxGrade(100);
-				// What's this?
-				// We'll assume 0 is "not set up" btw.
 			}
+			// Uses other functions to avoid this place from becoming a monster
 			fullCourseMap.get(courseName).setModeChosen(2);
 			fullCourseMap.get(courseName).setDrop(drops);
 			fullCourseMap.get(courseName).setWeight(weights);
@@ -444,47 +478,10 @@ public class Model {
 	}
 	
 	public boolean canAssignFinalGrades(String courseName) {
+		/* Checks if you can assign the final grades, by seeing if there's any ungraded assignments. */
 		if(this.getUngradedAssignments(courseName).size() > 0) {
 			return false;
 		}
-		return true;
-	}
-	
-	public void createCourses(String filename) {
-		// Should this lock itself up after 1 run?
-		try (Scanner scanLine = new Scanner(new File(filename))){
-			while(scanLine.hasNextLine()){
-				// format we get filenames from
-				String line = scanLine.nextLine();
-				if (!(fullCourseMap.containsKey(line))) {
-					fullCourseMap.put(line, new Course(line));
-				}
-				// This originally forced an error if a dupe existed, but I removed it because
-				// there is may be scenarios where duplicates may occur. Now it just handles it.
-				// May undo depending on how rest of the code is developed
-			}
-			scanLine.close();
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-	}
-	
-	// This function should be called on just about everything.
-	// courseName should be "" if it does not relate to a specific course.
-	// premissionreq works like this: 0 = student, 1 = teacher, 2 = both. It will validate they meet this number.
-	private boolean validateAccess(String courseName, int premissionReq) {
-		if (!(courseName.equals(""))) {
-			if (personUsing instanceof Teacher) {
-				// Note this is a not
-				if (!(fullCourseMap.get(courseName).getTeacher().equals(personUsing))) return false;
-			} else {
-				// Also a not
-				if (!(fullCourseMap.get(courseName).isEnrolled((Student) personUsing))) return false;
-			}
-		}
-		if (personUsing instanceof Teacher && premissionReq < 1) return false;
-		if (personUsing instanceof Student && premissionReq == 1) return false;
 		return true;
 	}
 	
@@ -493,22 +490,15 @@ public class Model {
 	}
 	
 	public boolean canCreateGroups(String courseName, int num) {
+		/* Returns if there's enough students for the group number you want. */
 		if(num <= fullCourseMap.get(courseName).getStudentMap().size()) {
 			return true;
 		}
 		return false;
 	}
 	
-	// This method was actually abandoned, but I imagine it might be used later.
-	public boolean getIsTeacher() {
-		return (personUsing instanceof Teacher);
-	}
-	
-	public void getCategories(String courseName, String assignmentName, String category) {
-		fullCourseMap.get(courseName).addAssignment(assignmentName, category);
-	}
-	
 	private FinalGrade calculateGrade(Double grade) {
+		/* Returns a calculation of the final grade, based on the grade percentage. */
 		if(grade >= 90) {
 			return FinalGrade.A;
 		} else if(grade >= 80) {
@@ -523,6 +513,7 @@ public class Model {
 	}
 	
 	public int isSetUp(String coursename) {
+		/* Returns if a course has a mode chosen for it. */
 		return (fullCourseMap.get(coursename).getModeChosen());
 	}
 }
