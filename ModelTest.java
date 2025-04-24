@@ -16,7 +16,6 @@ public class ModelTest {
 		try {
 			db = new Database(ac);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ac.setAccount("Fatih", "1234",db, false);
@@ -94,6 +93,55 @@ public class ModelTest {
 		model.addStudent("sgupta", "CSC252");
 		
 		model.canCalculateStudentCurAverage("CSC252", "sgupta");
+		
+		model.addAssignment("CSC252", "Hw2", "HW");
+		
+		model.calculateStats("CSC252", "Hw2");
+		
+		model.canCalculateStudentCurAverage("CSC252", "kpatel");
+		
+		model.assignFinalGrade("CSC252");
+
+		model.calculateStats(null, "Hw1");
+		
+		model.sortByLastName(null);
+		
+		model.sortByUserName(null);
+		
+		model.checkCompleted("CSC252");
+		
+		
+		model.addGradeForAssignment("jsmith", "Hw1", 50, "CSC335");
+		model.addGradeForAssignment("mwillams", "Hw1", 50, "CSC335");
+
+		model.addGradeForAssignment("jsmith", "Hw2", 60, "CSC335");
+		model.addGradeForAssignment("mwillams", "Hw2", 50, "CSC335");
+
+		
+		
+		model.addGradeForAssignment("jsmith", "Hw3", 30, "CSC335");
+		model.addGradeForAssignment("mwillams", "Hw3", 50, "CSC335");
+
+		
+		model.addGradeForAssignment("jsmith", "Hw4", 20, "CSC335");
+		model.addGradeForAssignment("mwillams", "Hw4", 50, "CSC335");
+
+		
+		
+		model.addGradeForAssignment("jsmith", "Hw5", 10, "CSC335");
+		model.addGradeForAssignment("mwillams", "Hw5", 50, "CSC335");
+
+
+		
+		model.calculateStats("CSC335", "Hw2");
+		model.calculateStats("CSC252", "Hw3");
+
+
+		model.sortByFirstName(null);
+		
+		model.calculateClassAverage(1, "CSC335", weights, drops);
+		
+		model.assignFinalGrade("CSC335");
 
 
 	}
