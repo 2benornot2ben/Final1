@@ -39,6 +39,7 @@ public class ModelTest {
 		weights.add(0.4);
 		ArrayList<Integer> drops = new ArrayList<>();
 		drops.add(1);
+		drops.add(2);
 		model.calculateClassAverage(1, "CSC252", weights, drops);
 		model.calculateClassAverage(0, "CSC252", weights, drops);
 		model.checkCompleted("CSC252");
@@ -143,7 +144,32 @@ public class ModelTest {
 		
 		model.assignFinalGrade("CSC335");
 
-
+		// model.createCourses("CSC252.txt");
+		
+		// model.createCourses("MyCourse");
+		
+		AccountStorage ac2 = new AccountStorage();
+		try {
+			Database db2 = new Database(ac2);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+				
+		model.calculateClassAverage(0, "CSC345", weights, drops);
+		
+		model.addGradeForAssignment("tnguyen", "Hw5", 10, "CSC345");
+		model.addGradeForAssignment("lwilson", "Hw5", 50, "CSC345");
+		
+		model.addGradeForAssignment("tnguyen", "Midterm1", 10, "CSC345");
+		model.addGradeForAssignment("tnguyen", "Midterm2", 10, "CSC345");
+		
+		model.addGradeForAssignment("lwilson", "Midterm1", 50, "CSC345");
+		model.addGradeForAssignment("lwilson", "Midterm2", 50, "CSC345");
+		
+		
+		model.assignFinalGrade("CSC345");
 	}
 
 }
