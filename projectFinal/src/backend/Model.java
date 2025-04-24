@@ -93,17 +93,12 @@ public class Model {
 		}
 		return false;
 	}
-	
-	/*
-	 *  All the methods are void right now, but if they return something change it to something`s type.
-	 *  This might not be final layout
-	 *  You can add helper methods
-	 *  
-	 *  I did not include parameters because i not sure what will they be, but i included my guesses. 
-	 */
 
 	public void addAssignment(String courseName, String assignmentName, String assignmentCategory) {
 		fullCourseMap.get(courseName).addAssignment(assignmentName, assignmentCategory);
+		ArrayList<Double> weights = fullCourseMap.get(courseName).getWeights();
+		ArrayList<Integer> drops = fullCourseMap.get(courseName).getDrops();
+		this.calculateClassAverage(fullCourseMap.get(courseName).getModeChosen(), courseName, weights, drops);
 	}
 	
 	public void removeAssignment(String courseName, String assignmentName, String assignmentCategory) {
@@ -140,13 +135,6 @@ public class Model {
 			return ("Successfully removed student");
 		}
 		return ("Student not in course!");
-	}
-	
-	public void importStudents() {
-		// for teachers
-		// adds students to a course
-				
-		// students (as a list?), course should come as a parameter (ig)
 	}
 	
 	public String getEnrolledStudents(String coursename) {
@@ -437,10 +425,12 @@ public class Model {
 			for( Assignment assignment: assignmentMap.values()) {
 				int type = assignment.getType().ordinal();
 				assignment.setMaxGrade(maxGrades[type]);
+				System.out.println(assignment.getAssignmentName() + " " + maxGrades[type] );
 			}
 			//more appropriate way needed.
 			fullCourseMap.get(courseName).setTotalGrade(2*maxGrades[0]+maxGrades[1]+maxGrades[2]+maxGrades[3]+maxGrades[4]);
 			fullCourseMap.get(courseName).setModeChosen(1); // New line of code here.
+			
 		} else {
 			for (Assignment assignment: assignmentMap.values()) {
 				assignment.setMaxGrade(100);
