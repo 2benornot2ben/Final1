@@ -221,20 +221,59 @@ public class View {
 					viewCurrentCourses(model, teacherUsername);
 					break;
 				case "3":
-					System.out.println("What's the name of the assignment you want to add?");
+					System.out.print("What's the name of the assignment you want to add?: ");
 					String assignmentName = scanner.nextLine().strip();
-					
-					System.out.println("Select the category");
+					System.out.println("1. Quiz");
+					System.out.println("2. Hw");
+					System.out.println("3. Project");
+					System.out.println("Select the category: ");
 					String assignmentCategory = scanner.nextLine().strip();
-					addAssignment(model, courseName, assignmentName, assignmentCategory);
+					String type;
+					while(true) {
+						if(isNumeric(assignmentCategory)) {
+							if(Integer.parseInt(assignmentCategory) > 0 && Integer.parseInt(assignmentCategory) < 4) {
+								if(Integer.parseInt(assignmentCategory) == 1) {
+									type = "QUIZ";
+								} else if(Integer.parseInt(assignmentCategory) == 2) {
+									type = "HW";
+								} else {
+									type = "PROJECT";
+								}
+								break;
+							}
+						}
+						System.out.println("Invalid input, Enter a number: ");
+						assignmentCategory = scanner.nextLine().strip();
+					}
+					addAssignment(model, courseName, assignmentName, type);
 					break;
 				case "4":
+					
 					System.out.println("What's the name of the assignment you want to remove?");
 					String assignmentNameToRemove = scanner.nextLine().strip();
-					
-					System.out.println("Select the category");
+					System.out.println("1. Quiz");
+					System.out.println("2. Hw");
+					System.out.println("3. Project");
+					System.out.println("Select the category: ");
 					String assignmentCategoryToRemove = scanner.nextLine().strip();
-					removeAssignment(model, courseName, assignmentNameToRemove, assignmentCategoryToRemove);
+					String atype;
+					while(true) {
+						if(isNumeric(assignmentCategoryToRemove)) {
+							if(Integer.parseInt(assignmentCategoryToRemove) > 0 && Integer.parseInt(assignmentCategoryToRemove) < 4) {
+								if(Integer.parseInt(assignmentCategoryToRemove) == 1) {
+									atype = "QUIZ";
+								} else if(Integer.parseInt(assignmentCategoryToRemove) == 2) {
+									atype = "HW";
+								} else {
+									atype = "PROJECT";
+								}
+								break;
+							}
+						}
+						System.out.println("Invalid input, Enter a number: ");
+						assignmentCategory = scanner.nextLine().strip();
+					}
+					removeAssignment(model, courseName, assignmentNameToRemove, atype);
 					break;
 				case "5":
 					addStudent(model, teacherUsername, scanner, courseName);
