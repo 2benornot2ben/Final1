@@ -1,3 +1,4 @@
+
 package backend;
 
 import static org.junit.Assert.*;
@@ -38,6 +39,12 @@ public class StudentTest {
         s.updateStudentAverageGrades("CSC252", 80.2);
         s.updateStudentAverageGrades("dlee", 89.9);
         s.getStudentAverage("CSC252");
+        Student t2 = new Student("Lebron", "Wilson", "lwilson");
+        t2.addCourse(new Course("CSC252"));
+        Student s2 = new Student(t2);
+        s2.addCourse(new Course("CSC345"));
+        s2.calculateGPA();
+        
     }
 
 }

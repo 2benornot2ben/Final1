@@ -30,17 +30,12 @@ public class AssignmentTest {
 		a.setMaxGrade(0);
 		a.getType();
 		
-        
-        
-		
-		
 		a.setidToGrade(null);
 		a.setAssignmentName("quiz1");
 		a.setGraded(false);
 		Assignment aCopy = new Assignment();
 		
-//		
-		// a.getStudentGradeExists("dlee");
+		Assignment aCopy2 = new Assignment(new Assignment());
 	}
 
 }

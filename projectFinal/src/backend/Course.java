@@ -373,7 +373,7 @@ public class Course {
 	
 	// JSON METHODS
 	// As in, we don't use these, but the json needs them to exist...
-	private Course() {
+	protected Course() {
 		studentMap = new HashMap<String, Student>();
 		assignmentMap = new HashMap<String, Assignment>();
 	}

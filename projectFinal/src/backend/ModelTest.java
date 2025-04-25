@@ -21,7 +21,7 @@ public class ModelTest {
 		ac.setAccount("Fatih", "1234",db, false);
 		Model model = new Model(db, new User("dlee"));
 		model.getGradedAssignments("CSC252");
-		//model.getCategories("CSC252", "syllabus_quiz", "quiz");
+		// model.getCategories("CSC252", "syllabus_quiz", "quiz");
 		model.getCompletedCoursesStudent("dlee");
 		model.getCompletedCoursesTeacher("jjohnson");
 		model.getCurrentUsersName();
@@ -70,7 +70,7 @@ public class ModelTest {
 		model.equals(null);
 		model.getCurCoursesStudent("dlee");
 		model.getCurCoursesTeacher("jjohnson");
-		//model.getIsTeacher();
+		// model.getIsTeacher();
 		model.isSetUp("CSC252");
 		model.getStudentGrade("dlee", "CSC252", "Hw1");
 		model.getUngradedAssignments("CSC252");

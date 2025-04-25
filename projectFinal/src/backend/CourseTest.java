@@ -226,4 +226,11 @@ public class CourseTest {
     	Course c = new Course("CSC252");
     	assertTrue(c.getGradesForAssignment("Final").isEmpty());
     }
+    
+    @Test
+    public void test_17() {
+    	Course c = new Course(new Course("CSC252"));
+    	Course c2 = new Course();
+    	c.getStudentGrade("lwilson", "Hw1");
+    }
 }
