@@ -232,7 +232,11 @@ public class Model {
 	}
 	
 	public ArrayList<Student> sortByFirstName(String courseName) {
-		/* Returns an arraylist of okay no what pardon exucse me what the f*/
+		/* Returns an arraylist of students... But everything here is COPIED,
+		 * and it's NOT how it's stored internally. The courses inside
+		 * are also COPIED, and so are the assignments!
+		 * In more relevant news, it also sorts it before returning it, by
+		 * the first name of the student.*/
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
 			return null;
@@ -250,6 +254,11 @@ public class Model {
 	}
 	
 	public ArrayList<Student> sortByLastName(String courseName) {
+		/* Returns an arraylist of students... But everything here is COPIED,
+		 * and it's NOT how it's stored internally. The courses inside
+		 * are also COPIED, and so are the assignments!
+		 * In more relevant news, it also sorts it before returning it, by
+		 * the last name of the student.*/
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
 			return null;
@@ -280,7 +289,11 @@ public class Model {
 	}
 	
 	public ArrayList<Student> sortByUserName(String courseName) {
-		// >:C
+		/* Returns an arraylist of students... But everything here is COPIED,
+		 * and it's NOT how it's stored internally. The courses inside
+		 * are also COPIED, and so are the assignments!
+		 * In more relevant news, it also sorts it before returning it, by
+		 * the username of the student.*/
 		Course course = fullCourseMap.get(courseName);
 		if(course == null) {
 			return null;
@@ -298,6 +311,11 @@ public class Model {
 	}
 	
 	public ArrayList<Student> sortByGrades(String courseName, String assignmentName) {
+		/* Returns an arraylist of students... But everything here is COPIED,
+		 * and it's NOT how it's stored internally. The courses inside
+		 * are also COPIED, and so are the assignments!
+		 * In more relevant news, it also sorts by the grades before
+		 * printing it. */
  		Course course = fullCourseMap.get(courseName);
  		if (course == null || course.getAssignmentsMap().get(assignmentName) == null) {
              return null;
@@ -309,6 +327,7 @@ public class Model {
              public int compare(Student s1, Student s2) {
                  Double grade1 = getStudentGrade(s1.getUsername(), courseName, assignmentName);
                  Double grade2 = getStudentGrade(s2.getUsername(), courseName, assignmentName);
+                 // Might be ungraded, so check those.
                  if (grade1 == null && grade2 == null) {
                      return 0;
                  } else if (grade1 == null) {
