@@ -130,7 +130,7 @@ public class CourseTest {
     	c.addAssignment("Final1", "Final");
     	c.addAssignment("Final2", "Final");
     	assertEquals(c.getAssignmentsMap().size(), 2);
-    	c.removeAssignment("Final2", "Final");
+    	c.removeAssignment("Final2");
     	assertEquals(c.getAssignmentsMap().size(), 1);
     }
     
@@ -225,5 +225,12 @@ public class CourseTest {
     public void test_16() {
     	Course c = new Course("CSC252");
     	assertTrue(c.getGradesForAssignment("Final").isEmpty());
+    }
+    
+    @Test
+    public void test_17() {
+    	Course c = new Course(new Course("CSC252"));
+    	Course c2 = new Course();
+    	c.getStudentGrade("lwilson", "Hw1");
     }
 }

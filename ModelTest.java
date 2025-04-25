@@ -21,7 +21,7 @@ public class ModelTest {
 		ac.setAccount("Fatih", "1234",db, false);
 		Model model = new Model(db, new User("dlee"));
 		model.getGradedAssignments("CSC252");
-		model.getCategories("CSC252", "syllabus_quiz", "quiz");
+		// model.getCategories("CSC252", "syllabus_quiz", "quiz");
 		model.getCompletedCoursesStudent("dlee");
 		model.getCompletedCoursesTeacher("jjohnson");
 		model.getCurrentUsersName();
@@ -53,7 +53,7 @@ public class ModelTest {
 		model.calculateGPA("dlee");
 		model.calculateStudentCurAverage("dlee");
 		model.getEnrolledStudents("CSC252");
-		model.removeAssignment("CSC252", "syllabus_quiz", "quiz");
+		model.removeAssignment("CSC252", "syllabus_quiz");
 		model.canCalculateStudentCurAverage("CSC252", "dlee");
 		model.toString();
 		model.sortByFirstName("CSC252");
@@ -70,7 +70,7 @@ public class ModelTest {
 		model.equals(null);
 		model.getCurCoursesStudent("dlee");
 		model.getCurCoursesTeacher("jjohnson");
-		model.getIsTeacher();
+		// model.getIsTeacher();
 		model.isSetUp("CSC252");
 		model.getStudentGrade("dlee", "CSC252", "Hw1");
 		model.getUngradedAssignments("CSC252");
@@ -83,7 +83,7 @@ public class ModelTest {
 		model.putInGroups("CSC252", 2);
 
 		model.addAssignment("CSC252", "Hw1", "HW");
-		model.removeAssignment("CSC252", "Hw1", "HW");
+		model.removeAssignment("CSC252", "Hw1");
 		
 		model.getStudentList("CSC252");
 		

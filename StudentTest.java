@@ -38,6 +38,11 @@ public class StudentTest {
         s.updateStudentAverageGrades("CSC252", 80.2);
         s.updateStudentAverageGrades("dlee", 89.9);
         s.getStudentAverage("CSC252");
+        
+        Student s2 = new Student(new Student("Lebron", "Wilson", "lwilson"));
+        s2.addCourse(new Course("CSC345"));
+        s2.calculateGPA();
+        
     }
 
 }
