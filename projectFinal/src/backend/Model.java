@@ -238,7 +238,7 @@ public class Model {
 			return null;
 		}
 		
-		ArrayList<Student> students = course.getStudentMap();
+		ArrayList<Student> students = course.getStudentMapCopier();
 		Collections.sort(students, new Comparator<Student>() {
 	        @Override
 	        public int compare(Student s1, Student s2) {
@@ -255,7 +255,7 @@ public class Model {
 			return null;
 		}
 		
-		ArrayList<Student> students = course.getStudentMap();
+		ArrayList<Student> students = course.getStudentMapCopier();
 		Collections.sort(students, new Comparator<Student>() {
 	        @Override
 	        public int compare(Student s1, Student s2) {
@@ -286,7 +286,7 @@ public class Model {
 			return null;
 		}
 		
-		ArrayList<Student> students = course.getStudentMap();
+		ArrayList<Student> students = course.getStudentMapCopier();
 		Collections.sort(students, new Comparator<Student>() {
 	        @Override
 	        public int compare(Student s1, Student s2) {
@@ -303,7 +303,7 @@ public class Model {
              return null;
          }
  		
- 		ArrayList<Student> students = course.getStudentMap();
+ 		ArrayList<Student> students = course.getStudentMapCopier();
          Collections.sort(students, new Comparator<Student>() {
              @Override
              public int compare(Student s1, Student s2) {

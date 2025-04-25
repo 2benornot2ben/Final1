@@ -34,6 +34,20 @@ public class Student extends User {
 		studentGradeLetters = new HashMap<String, FinalGrade>();
 	}
 	
+	protected Student(Student student) {
+		/* Copy constructor - only copies over names, for that is all
+		 * that we need this for. It also helps prevent peering into the code. */
+		super(student.getUsername());
+		this.firstName = student.getFirstName();
+		this.lastName = student.getLastName();
+		studentAverageGrades = new HashMap<String, Double>();
+		studentGradeLetters = new HashMap<String, FinalGrade>();
+		this.courseMap = new HashMap<String, Course>();
+		for (Course cour : student.courseMap.values()) {
+			courseMap.put(cour.getCourseName(), new Course(cour));
+		}
+	}
+	
 	public String getFirstName(){
 		return firstName;
 	}

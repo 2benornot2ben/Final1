@@ -60,8 +60,23 @@ public class Course {
         categories.put(AssignmentType.PROJECT, 250.0);
 	}
 	
+	protected Course(Course course) {
+		/* Copy constructor for course. Only copies over what is needed
+		 * for sorting functions. */
+		this.assignmentMap = course.getAssignmentsMapCopy();
+		// Yeah, that's... All we need.
+	}
+	
 	protected void setTotalGrade(double total) {
 		totalGrade = total;
+	}
+	
+	protected HashMap<String, Assignment> getAssignmentsMapCopy() {
+		HashMap<String, Assignment> hashStore = new HashMap<String, Assignment>();
+		for (Assignment assign: assignmentMap.values()) {
+			hashStore.put(assign.getAssignmentName(), new Assignment(assign));
+		}
+		return hashStore;
 	}
 	
 	protected Double getTotalGrade() {
@@ -206,6 +221,17 @@ public class Course {
 		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
 		for(Student student : studentMap.values()) {
 			copyStudentMap.add(student);
+		}
+		
+		return copyStudentMap;
+	}
+	
+	protected ArrayList<Student> getStudentMapCopier(){
+		/* This tries to avoid giving a hashmap, since where it's used
+		 * would be inconvenient if it was. */
+		ArrayList<Student> copyStudentMap =  new ArrayList<Student>();
+		for(Student student : studentMap.values()) {
+			copyStudentMap.add(new Student(student));
 		}
 		
 		return copyStudentMap;

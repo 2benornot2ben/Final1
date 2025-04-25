@@ -34,6 +34,17 @@ public class Assignment {
 		this.type = type;
 	}
 	
+	protected Assignment(Assignment assign) {
+		/* Makes a copy of the object, useful for preventing
+		 * escaping references. */
+		this.idToGrade = assign.getIdToGrade();
+		this.assignmentName = assign.getAssignmentName();
+		this.graded = assign.isGraded();
+		this.maxGrade = assign.getMaxGrade();
+		this.type = assign.getType();
+		
+	}
+	
 	public Double getStudentGrade(String username) {
 		// simple getter
 		return idToGrade.get(username);
@@ -64,7 +75,7 @@ public class Assignment {
 		return assignmentName;
 	}
 	
-	protected double getMaxGrade() {
+	protected int getMaxGrade() {
 		// simple getter
 		return maxGrade;
 	}
